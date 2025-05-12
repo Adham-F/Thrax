@@ -10,6 +10,8 @@ export const users = pgTable("users", {
   email: text("email").notNull().unique(),
   fullName: text("full_name"),
   isAdmin: boolean("is_admin").default(false),
+  loyaltyPoints: integer("loyalty_points").default(0),
+  loyaltyTier: text("loyalty_tier").default("Bronze"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
