@@ -199,9 +199,9 @@ export default function CheckoutPage() {
   return (
     <>
       <Helmet>
-        <title>Checkout | VIBE</title>
+        <title>Checkout | THRAX</title>
         <meta name="description" content="Complete your purchase securely" />
-        <meta property="og:title" content="Checkout | VIBE" />
+        <meta property="og:title" content="Checkout | THRAX" />
         <meta property="og:description" content="Complete your purchase securely" />
         <meta property="og:type" content="website" />
       </Helmet>

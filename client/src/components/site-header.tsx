@@ -39,7 +39,7 @@ export default function SiteHeader() {
   const [isScrolled, setIsScrolled] = useState(false);
 
   // Fetch wishlist count
-  const { data: wishlistItems = [] } = useQuery({
+  const { data: wishlistItems = [] } = useQuery<WishlistItemWithProduct[]>({
     queryKey: ["/api/wishlist"],
     enabled: !!user,
   });
