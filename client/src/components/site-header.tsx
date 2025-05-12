@@ -87,10 +87,8 @@ export default function SiteHeader() {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between py-4">
           {/* Logo */}
-          <Link href="/">
-            <a className="text-2xl font-bold">
-              <span className="text-primary">THRAX</span>
-            </a>
+          <Link href="/" className="text-2xl font-bold">
+            <span className="text-primary">THRAX</span>
           </Link>
           
           {/* Desktop Search Bar */}
@@ -115,27 +113,30 @@ export default function SiteHeader() {
                 ) : searchResults && searchResults.length > 0 ? (
                   <div className="p-2">
                     {searchResults.slice(0, 5).map((product) => (
-                      <Link key={product.id} href={`/product/${product.id}`}>
-                        <a className="flex items-center p-2 hover:bg-muted rounded-md transition-colors">
-                          <div className="h-10 w-10 rounded bg-muted overflow-hidden mr-3">
-                            <img
-                              src={product.imageUrl}
-                              alt={product.name}
-                              className="h-full w-full object-cover"
-                            />
-                          </div>
-                          <div className="flex-1">
-                            <p className="text-sm font-medium">{product.name}</p>
-                            <p className="text-xs text-muted-foreground">{product.category}</p>
-                          </div>
-                        </a>
+                      <Link 
+                        key={product.id} 
+                        href={`/product/${product.id}`}
+                        className="flex items-center p-2 hover:bg-muted rounded-md transition-colors"
+                      >
+                        <div className="h-10 w-10 rounded bg-muted overflow-hidden mr-3">
+                          <img
+                            src={product.imageUrl}
+                            alt={product.name}
+                            className="h-full w-full object-cover"
+                          />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium">{product.name}</p>
+                          <p className="text-xs text-muted-foreground">{product.category}</p>
+                        </div>
                       </Link>
                     ))}
                     {searchResults.length > 5 && (
-                      <Link href={`/category/all?search=${encodeURIComponent(searchQuery)}`}>
-                        <a className="block text-center text-sm text-primary py-2 hover:underline">
-                          See all {searchResults.length} results
-                        </a>
+                      <Link 
+                        href={`/category/all?search=${encodeURIComponent(searchQuery)}`}
+                        className="block text-center text-sm text-primary py-2 hover:underline"
+                      >
+                        See all {searchResults.length} results
                       </Link>
                     )}
                   </div>
@@ -180,20 +181,22 @@ export default function SiteHeader() {
                     ) : searchResults && searchResults.length > 0 ? (
                       <div className="space-y-2">
                         {searchResults.slice(0, 5).map((product) => (
-                          <Link key={product.id} href={`/product/${product.id}`}>
-                            <a className="flex items-center p-2 hover:bg-muted rounded-md transition-colors">
-                              <div className="h-10 w-10 rounded bg-muted overflow-hidden mr-3">
-                                <img
-                                  src={product.imageUrl}
-                                  alt={product.name}
-                                  className="h-full w-full object-cover"
-                                />
-                              </div>
-                              <div className="flex-1">
-                                <p className="text-sm font-medium">{product.name}</p>
-                                <p className="text-xs text-muted-foreground">{product.category}</p>
-                              </div>
-                            </a>
+                          <Link 
+                            key={product.id} 
+                            href={`/product/${product.id}`}
+                            className="flex items-center p-2 hover:bg-muted rounded-md transition-colors"
+                          >
+                            <div className="h-10 w-10 rounded bg-muted overflow-hidden mr-3">
+                              <img
+                                src={product.imageUrl}
+                                alt={product.name}
+                                className="h-full w-full object-cover"
+                              />
+                            </div>
+                            <div className="flex-1">
+                              <p className="text-sm font-medium">{product.name}</p>
+                              <p className="text-xs text-muted-foreground">{product.category}</p>
+                            </div>
                           </Link>
                         ))}
                       </div>
@@ -232,38 +235,30 @@ export default function SiteHeader() {
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link href="/profile">
-                      <a className="flex items-center cursor-pointer">
-                        <User className="mr-2 h-4 w-4" />
-                        <span>Profile</span>
-                      </a>
+                    <Link href="/profile" className="flex items-center cursor-pointer">
+                      <User className="mr-2 h-4 w-4" />
+                      <span>Profile</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/orders">
-                      <a className="flex items-center cursor-pointer">
-                        <Package className="mr-2 h-4 w-4" />
-                        <span>My Orders</span>
-                      </a>
+                    <Link href="/orders" className="flex items-center cursor-pointer">
+                      <Package className="mr-2 h-4 w-4" />
+                      <span>My Orders</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/wishlist">
-                      <a className="flex items-center cursor-pointer">
-                        <Heart className="mr-2 h-4 w-4" />
-                        <span>Wishlist</span>
-                      </a>
+                    <Link href="/wishlist" className="flex items-center cursor-pointer">
+                      <Heart className="mr-2 h-4 w-4" />
+                      <span>Wishlist</span>
                     </Link>
                   </DropdownMenuItem>
                   {user.isAdmin && (
                     <>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem asChild>
-                        <Link href="/admin/dashboard">
-                          <a className="flex items-center cursor-pointer">
-                            <Settings className="mr-2 h-4 w-4" />
-                            <span>Admin Dashboard</span>
-                          </a>
+                        <Link href="/admin/dashboard" className="flex items-center cursor-pointer">
+                          <Settings className="mr-2 h-4 w-4" />
+                          <span>Admin Dashboard</span>
                         </Link>
                       </DropdownMenuItem>
                     </>
