@@ -89,7 +89,7 @@ export default function SiteHeader() {
           {/* Logo */}
           <Link href="/">
             <a className="text-2xl font-bold">
-              <span className="text-primary">VIBE</span>
+              <span className="text-primary">THRAX</span>
             </a>
           </Link>
           

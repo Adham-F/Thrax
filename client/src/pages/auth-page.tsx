@@ -93,9 +93,9 @@ export default function AuthPage() {
   return (
     <>
       <Helmet>
-        <title>Sign In or Register | VIBE</title>
+        <title>Sign In or Register | THRAX</title>
         <meta name="description" content="Sign in to your account or create a new one to access exclusive deals and manage your orders." />
-        <meta property="og:title" content="Sign In or Register | VIBE" />
+        <meta property="og:title" content="Sign In or Register | THRAX" />
         <meta property="og:description" content="Sign in to your account or create a new one." />
         <meta property="og:type" content="website" />
       </Helmet>
@@ -338,7 +338,7 @@ export default function AuthPage() {
         <div className="hidden md:block md:flex-1 bg-gradient-to-br from-primary to-secondary relative overflow-hidden">
           <div className="absolute inset-0 bg-dark opacity-50"></div>
           <div className="relative flex flex-col justify-center h-full p-12 text-white z-10">
-            <h1 className="text-4xl font-bold mb-4">Join the VIBE</h1>
+            <h1 className="text-4xl font-bold mb-4">Join the THRAX</h1>
             <p className="text-xl mb-6">
               Discover the latest in tech, fashion, and lifestyle products curated for the next generation.
             </p>

@@ -170,7 +170,7 @@ export default function SiteFooter({ className }: SiteFooterProps) {
             <div className="mb-4 md:mb-0">
               <Link href="/">
                 <a className="text-2xl font-bold">
-                  <span className="text-primary">VIBE</span>
+                  <span className="text-primary">THRAX</span>
                 </a>
               </Link>
             </div>
@@ -184,7 +184,7 @@ export default function SiteFooter({ className }: SiteFooterProps) {
           </div>
           
           <div className="text-center mt-6 text-sm text-muted-foreground">
-            &copy; {new Date().getFullYear()} VIBE. All rights reserved.
+            &copy; {new Date().getFullYear()} THRAX. All rights reserved.
           </div>
         </div>
       </div>

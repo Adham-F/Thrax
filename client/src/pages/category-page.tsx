@@ -90,9 +90,9 @@ export default function CategoryPage() {
   return (
     <>
       <Helmet>
-        <title>{categoryTitle} Products | VIBE</title>
+        <title>{categoryTitle} Products | THRAX</title>
         <meta name="description" content={`Shop our trending ${category} products. Find the latest styles and innovations for Gen Z.`} />
-        <meta property="og:title" content={`${categoryTitle} Products | VIBE`} />
+        <meta property="og:title" content={`${categoryTitle} Products | THRAX`} />
         <meta property="og:description" content={`Shop our trending ${category} products. Find the latest styles and innovations.`} />
         <meta property="og:type" content="website" />
       </Helmet>

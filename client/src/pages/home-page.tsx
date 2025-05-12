@@ -31,9 +31,9 @@ export default function HomePage() {
   return (
     <>
       <Helmet>
-        <title>VIBE - Trendy Products for Gen Z</title>
+        <title>THRAX - Trendy Products for Gen Z</title>
         <meta name="description" content="Discover the latest in tech, fashion, and lifestyle products curated for the next generation. Shop trendy clothes, tech gadgets, beauty products and more." />
-        <meta property="og:title" content="VIBE - Trendy Products for Gen Z" />
+        <meta property="og:title" content="THRAX - Trendy Products for Gen Z" />
         <meta property="og:description" content="Discover the latest in tech, fashion, and lifestyle products curated for the next generation." />
         <meta property="og:type" content="website" />
       </Helmet>
