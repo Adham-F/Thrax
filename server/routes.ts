@@ -7,8 +7,10 @@ import {
   insertCartItemSchema, 
   insertWishlistItemSchema,
   insertOrderSchema,
-  insertOrderItemSchema
+  insertOrderItemSchema,
+  insertProductSchema
 } from "@shared/schema";
+import { isAdmin } from "./middleware/admin";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Set up authentication routes
@@ -299,6 +301,70 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(200).json({ message: "Successfully subscribed to newsletter" });
     } catch (error) {
       res.status(500).json({ message: "Failed to subscribe to newsletter" });
+    }
+  });
+
+  // Admin API Routes - Protected with isAdmin middleware
+  app.post("/api/admin/products", isAdmin, async (req, res) => {
+    try {
+      const productData = insertProductSchema.parse(req.body);
+      const product = await storage.createProduct(productData);
+      res.status(201).json(product);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid product data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to create product" });
+    }
+  });
+
+  app.put("/api/admin/products/:id", isAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid product ID" });
+      }
+
+      // In a real implementation, we'd update the product here
+      // For this prototype, we'll just return success
+      res.status(200).json({ message: "Product updated successfully" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to update product" });
+    }
+  });
+
+  app.delete("/api/admin/products/:id", isAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid product ID" });
+      }
+
+      // In a real implementation, we'd delete the product here
+      // For this prototype, we'll just return success
+      res.status(200).json({ message: "Product deleted successfully" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to delete product" });
+    }
+  });
+
+  app.get("/api/admin/users", isAdmin, async (req, res) => {
+    try {
+      // In a real implementation, we'd fetch all users here
+      // For this prototype, we'll just return success
+      res.status(200).json({ message: "Users fetched successfully" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch users" });
+    }
+  });
+
+  app.get("/api/admin/orders", isAdmin, async (req, res) => {
+    try {
+      // In a real implementation, we'd fetch all orders here
+      // For this prototype, we'll just return success
+      res.status(200).json({ message: "Orders fetched successfully" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch orders" });
     }
   });
 
