@@ -6,7 +6,7 @@ if (!process.env.STRIPE_SECRET_KEY) {
 
 // Initialize Stripe with the secret key
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: '2023-10-16', // Use the latest API version
+  apiVersion: '2025-04-30.basil', // Use the latest API version
 });
 
 // Create a payment intent for a one-time payment

@@ -11,6 +11,7 @@ import {
   insertProductSchema
 } from "@shared/schema";
 import { isAdmin } from "./middleware/admin";
+import { createPaymentIntent } from "./stripe";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Set up authentication routes
@@ -46,24 +47,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/products/:id", async (req, res) => {
-    try {
-      const id = parseInt(req.params.id);
-      if (isNaN(id)) {
-        return res.status(400).json({ message: "Invalid product ID" });
-      }
-
-      const product = await storage.getProductById(id);
-      if (!product) {
-        return res.status(404).json({ message: "Product not found" });
-      }
-
-      res.status(200).json(product);
-    } catch (error) {
-      res.status(500).json({ message: "Failed to fetch product" });
-    }
-  });
-
   app.get("/api/products/new-arrivals", async (req, res) => {
     try {
       const products = await storage.getNewArrivals();
@@ -88,6 +71,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(200).json(products);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch sale products" });
+    }
+  });
+  
+  app.get("/api/products/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid product ID" });
+      }
+
+      const product = await storage.getProductById(id);
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+
+      res.status(200).json(product);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch product" });
     }
   });
 
@@ -301,6 +302,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(200).json({ message: "Successfully subscribed to newsletter" });
     } catch (error) {
       res.status(500).json({ message: "Failed to subscribe to newsletter" });
+    }
+  });
+  
+  // Stripe payment intent creation
+  app.post("/api/create-payment-intent", async (req, res) => {
+    try {
+      const { amount, currency = "usd", metadata = {} } = req.body;
+      
+      if (!amount || typeof amount !== 'number' || amount <= 0) {
+        return res.status(400).json({ message: "Valid amount is required" });
+      }
+      
+      const paymentIntent = await createPaymentIntent(amount, currency, metadata);
+      
+      res.status(200).json({ 
+        clientSecret: paymentIntent.client_secret,
+        id: paymentIntent.id
+      });
+    } catch (error: any) {
+      console.error("Error creating payment intent:", error);
+      res.status(500).json({ 
+        message: "Failed to create payment intent", 
+        error: error.message 
+      });
     }
   });
 

@@ -28,7 +28,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useQuery } from "@tanstack/react-query";
-import { Product } from "@shared/schema";
+import { Product, WishlistItemWithProduct } from "@shared/schema";
 
 export default function SiteHeader() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
