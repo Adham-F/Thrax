@@ -12,6 +12,7 @@ import ProductPage from "@/pages/product-page";
 import CategoryPage from "@/pages/category-page";
 import CheckoutPage from "@/pages/checkout-page";
 import AuthPage from "@/pages/auth-page";
+import AdminDashboard from "@/pages/admin/dashboard";
 import { ProtectedRoute } from "@/lib/protected-route";
 
 function Router() {
@@ -21,6 +22,7 @@ function Router() {
       <Route path="/product/:id" component={ProductPage} />
       <Route path="/category/:category" component={CategoryPage} />
       <ProtectedRoute path="/checkout" component={CheckoutPage} />
+      <ProtectedRoute path="/admin/dashboard" component={AdminDashboard} />
       <Route path="/auth" component={AuthPage} />
       <Route component={NotFound} />
     </Switch>

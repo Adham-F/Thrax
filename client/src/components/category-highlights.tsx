@@ -8,16 +8,22 @@ interface CategoryProps {
 export default function CategoryHighlights({ className }: CategoryProps) {
   const categories = [
     {
+      name: "All Products",
+      description: "Complete collection",
+      image: "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=800&q=80",
+      link: "/category/all"
+    },
+    {
       name: "Tech",
       description: "Latest gadgets",
       image: "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=800&q=80",
       link: "/category/tech"
     },
     {
-      name: "Fashion",
+      name: "Clothes",
       description: "Trendy styles",
       image: "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=800&q=80",
-      link: "/category/fashion"
+      link: "/category/clothes"
     },
     {
       name: "Beauty",
@@ -30,6 +36,24 @@ export default function CategoryHighlights({ className }: CategoryProps) {
       description: "Elevate living",
       image: "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=800&q=80",
       link: "/category/lifestyle"
+    },
+    {
+      name: "Shoes",
+      description: "Footwear collection",
+      image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=800&q=80",
+      link: "/category/shoes"
+    },
+    {
+      name: "New Arrivals",
+      description: "Just dropped",
+      image: "https://images.unsplash.com/photo-1607083206968-13611e3d76db?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=800&q=80",
+      link: "/category/new"
+    },
+    {
+      name: "Sale",
+      description: "Special discounts",
+      image: "https://images.unsplash.com/photo-1607083206869-4c7672e72a8a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=800&q=80",
+      link: "/category/sale"
     }
   ];
 
@@ -38,8 +62,8 @@ export default function CategoryHighlights({ className }: CategoryProps) {
       <div className="container mx-auto">
         <h2 className="text-2xl md:text-3xl font-bold mb-8">Shop by Category</h2>
         
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-          {categories.map((category, index) => (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 flex-wrap">
+          {categories.slice(0, 8).map((category, index) => (
             <Link key={index} href={category.link}>
               <a className="group relative overflow-hidden rounded-xl aspect-square">
                 <img 

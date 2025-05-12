@@ -255,6 +255,19 @@ export default function SiteHeader() {
                       </a>
                     </Link>
                   </DropdownMenuItem>
+                  {user.isAdmin && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem asChild>
+                        <Link href="/admin/dashboard">
+                          <a className="flex items-center cursor-pointer">
+                            <Settings className="mr-2 h-4 w-4" />
+                            <span>Admin Dashboard</span>
+                          </a>
+                        </Link>
+                      </DropdownMenuItem>
+                    </>
+                  )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem 
                     className="text-destructive focus:text-destructive cursor-pointer"

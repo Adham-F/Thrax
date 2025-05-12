@@ -7,6 +7,9 @@ import HeroSection from "@/components/hero-section";
 import CategoryHighlights from "@/components/category-highlights";
 import TrendingProducts from "@/components/trending-products";
 import FeaturedCollection from "@/components/featured-collection";
+import KeepShoppingSection from "@/components/keep-shopping-section";
+import RecommendationsSection from "@/components/recommendations-section";
+import BuyAgainSection from "@/components/buy-again-section";
 import Newsletter from "@/components/newsletter";
 import CartSidebar from "@/components/cart-sidebar";
 import { Helmet } from 'react-helmet';
@@ -43,6 +46,11 @@ export default function HomePage() {
         
         <main className="flex-1">
           <HeroSection />
+          
+          {/* User-specific sections */}
+          <KeepShoppingSection />
+          <RecommendationsSection />
+          <BuyAgainSection />
           
           <CategoryHighlights />
           
