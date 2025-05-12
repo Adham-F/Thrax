@@ -381,73 +381,80 @@ export default function SiteHeader() {
         <nav className="hidden md:block py-3 border-t border-border overflow-x-auto no-scrollbar">
           <ul className="flex space-x-8 whitespace-nowrap">
             <li>
-              <Link href="/category/all">
-                <a className={cn(
+              <Link 
+                href="/category/all"
+                className={cn(
                   "transition-colors",
                   location === "/category/all" ? "text-primary font-medium" : "text-foreground hover:text-primary"
-                )}>
-                  All Products
-                </a>
+                )}
+              >
+                All Products
               </Link>
             </li>
             <li>
-              <Link href="/category/tech">
-                <a className={cn(
+              <Link 
+                href="/category/tech"
+                className={cn(
                   "transition-colors",
                   isCategoryActive("tech") ? "text-primary font-medium" : "text-foreground hover:text-primary"
-                )}>
-                  Tech
-                </a>
+                )}
+              >
+                Tech
               </Link>
             </li>
             <li>
-              <Link href="/category/fashion">
-                <a className={cn(
+              <Link 
+                href="/category/fashion"
+                className={cn(
                   "transition-colors",
                   isCategoryActive("fashion") ? "text-primary font-medium" : "text-foreground hover:text-primary"
-                )}>
-                  Fashion
-                </a>
+                )}
+              >
+                Fashion
               </Link>
             </li>
             <li>
-              <Link href="/category/beauty">
-                <a className={cn(
+              <Link 
+                href="/category/beauty"
+                className={cn(
                   "transition-colors",
                   isCategoryActive("beauty") ? "text-primary font-medium" : "text-foreground hover:text-primary"
-                )}>
-                  Beauty
-                </a>
+                )}
+              >
+                Beauty
               </Link>
             </li>
             <li>
-              <Link href="/category/lifestyle">
-                <a className={cn(
+              <Link 
+                href="/category/lifestyle"
+                className={cn(
                   "transition-colors",
                   isCategoryActive("lifestyle") ? "text-primary font-medium" : "text-foreground hover:text-primary"
-                )}>
-                  Lifestyle
-                </a>
+                )}
+              >
+                Lifestyle
               </Link>
             </li>
             <li>
-              <Link href="/category/new">
-                <a className={cn(
+              <Link 
+                href="/category/new"
+                className={cn(
                   "transition-colors",
                   isCategoryActive("new") ? "text-primary font-medium" : "text-foreground hover:text-primary"
-                )}>
-                  New Arrivals
-                </a>
+                )}
+              >
+                New Arrivals
               </Link>
             </li>
             <li>
-              <Link href="/category/sale">
-                <a className={cn(
+              <Link 
+                href="/category/sale"
+                className={cn(
                   "transition-colors",
                   isCategoryActive("sale") ? "text-primary font-medium" : "text-foreground hover:text-primary"
-                )}>
-                  Sale
-                </a>
+                )}
+              >
+                Sale
               </Link>
             </li>
           </ul>

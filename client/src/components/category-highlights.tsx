@@ -64,19 +64,21 @@ export default function CategoryHighlights({ className }: CategoryProps) {
         
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 flex-wrap">
           {categories.slice(0, 8).map((category, index) => (
-            <Link key={index} href={category.link}>
-              <a className="group relative overflow-hidden rounded-xl aspect-square">
-                <img 
-                  src={category.image}
-                  alt={`${category.name} category`}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent"></div>
-                <div className="absolute bottom-0 left-0 p-4">
-                  <h3 className="text-xl font-bold text-white">{category.name}</h3>
-                  <p className="text-sm text-muted-foreground">{category.description}</p>
-                </div>
-              </a>
+            <Link 
+              key={index} 
+              href={category.link}
+              className="group relative overflow-hidden rounded-xl aspect-square"
+            >
+              <img 
+                src={category.image}
+                alt={`${category.name} category`}
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent"></div>
+              <div className="absolute bottom-0 left-0 p-4">
+                <h3 className="text-xl font-bold text-white">{category.name}</h3>
+                <p className="text-sm text-muted-foreground">{category.description}</p>
+              </div>
             </Link>
           ))}
         </div>
