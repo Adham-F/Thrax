@@ -1,0 +1,69 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 250 90% 69%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 196 100% 50%;
+    --secondary-foreground: 0 0% 100%;
+    --accent: 325 100% 63%;
+    --accent-foreground: 0 0% 100%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 240 4.9% 83.9%;
+    --sidebar-background: 240 10% 6.9%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 250 90% 69%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 5% 84.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 240 4.9% 83.9%;
+    --chart-1: 250 90% 69%;
+    --chart-2: 196 100% 50%;
+    --chart-3: 325 100% 63%;
+    --chart-4: 144 100% 58%;
+    --chart-5: 52 100% 50%;
+    --radius: 0.5rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-medium;
+  }
+}
+
+@layer utilities {
+  .product-card:hover .product-actions {
+    @apply opacity-100;
+  }
+  
+  .product-card:hover img {
+    @apply scale-105;
+  }
+  
+  .btn-hover:hover {
+    @apply -translate-y-1;
+  }
+}
