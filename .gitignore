@@ -1,6 +1,57 @@
+# Dependencies
 node_modules
+/.pnp
+.pnp.js
+
+# Build outputs
 dist
-.DS_Store
+build
 server/public
+.output
+.nuxt
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Editor & OS files
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+Thumbs.db
+
+# Typescript
 vite.config.ts.*
+*.tsbuildinfo
+
+# Testing
+/coverage
+
+# Replit-specific files
+.replit
+replit.nix
+.config
+.upm
+
+# Misc
 *.tar.gz
+.cache
+test-env.js
