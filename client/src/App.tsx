@@ -15,6 +15,13 @@ import AuthPage from "@/pages/auth-page";
 import ProfilePage from "@/pages/profile-page";
 import AdminDashboard from "@/pages/admin/dashboard";
 import AdminProducts from "@/pages/admin/products";
+import AdminHelpPages from "@/pages/admin/help-pages";
+import AdminNewsletters from "@/pages/admin/newsletters";
+import ContactUsPage from "@/pages/help/contact-us";
+import FAQsPage from "@/pages/help/faqs";
+import ShippingPage from "@/pages/help/shipping";
+import TrackOrderPage from "@/pages/help/track-order";
+import SizeGuidePage from "@/pages/help/size-guide";
 import { ProtectedRoute } from "@/lib/protected-route";
 import { Helmet } from "react-helmet";
 
@@ -27,10 +34,19 @@ function Router() {
       <ProtectedRoute path="/checkout" component={CheckoutPage} />
       <ProtectedRoute path="/profile" component={ProfilePage} />
       
+      {/* Help Pages */}
+      <Route path="/help/contact-us" component={ContactUsPage} />
+      <Route path="/help/faqs" component={FAQsPage} />
+      <Route path="/help/shipping" component={ShippingPage} />
+      <Route path="/help/track-order" component={TrackOrderPage} />
+      <Route path="/help/size-guide" component={SizeGuidePage} />
+      
       {/* Admin Routes */}
       <ProtectedRoute path="/admin" component={AdminDashboard} />
       <ProtectedRoute path="/admin/dashboard" component={AdminDashboard} />
       <ProtectedRoute path="/admin/products" component={AdminProducts} />
+      <ProtectedRoute path="/admin/help-pages" component={AdminHelpPages} />
+      <ProtectedRoute path="/admin/newsletters" component={AdminNewsletters} />
       
       <Route path="/auth" component={AuthPage} />
       <Route component={NotFound} />

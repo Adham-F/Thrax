@@ -66,6 +66,9 @@ const newCampaignSchema = z.object({
   content: z.string().min(10, "Content must be at least 10 characters")
 });
 
+type NewSubscriberFormValues = z.infer<typeof newSubscriberSchema>;
+type NewCampaignFormValues = z.infer<typeof newCampaignSchema>;
+
 export default function NewslettersAdmin() {
   const { toast } = useToast();
   const [isNewSubscriberOpen, setIsNewSubscriberOpen] = useState(false);
