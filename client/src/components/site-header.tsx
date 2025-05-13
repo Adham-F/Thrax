@@ -23,7 +23,12 @@ import {
   LogOut,
   Settings,
   FileText,
-  Package
+  Package,
+  HelpCircle,
+  MessageSquare,
+  Mail,
+  Truck,
+  Ruler
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -261,6 +266,24 @@ export default function SiteHeader() {
                           <span>Admin Dashboard</span>
                         </Link>
                       </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href="/admin/products" className="flex items-center cursor-pointer">
+                          <ShoppingBag className="mr-2 h-4 w-4" />
+                          <span>Manage Products</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href="/admin/help-pages" className="flex items-center cursor-pointer">
+                          <FileText className="mr-2 h-4 w-4" />
+                          <span>Edit Help Pages</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href="/admin/newsletters" className="flex items-center cursor-pointer">
+                          <Mail className="mr-2 h-4 w-4" />
+                          <span>Newsletter Management</span>
+                        </Link>
+                      </DropdownMenuItem>
                     </>
                   )}
                   <DropdownMenuSeparator />
@@ -332,7 +355,7 @@ export default function SiteHeader() {
                 </Button>
               </SheetTrigger>
               <SheetContent>
-                <div className="py-4 space-y-4">
+                <div className="py-4 space-y-6">
                   <h2 className="text-lg font-bold">Categories</h2>
                   <nav className="space-y-2">
                     <Button
@@ -371,6 +394,60 @@ export default function SiteHeader() {
                       Lifestyle
                     </Button>
                   </nav>
+                  
+                  <h2 className="text-lg font-bold">Help & Support</h2>
+                  <nav className="space-y-2">
+                    <Button
+                      variant={location === "/help/contact-us" ? "default" : "ghost"}
+                      className="w-full justify-start"
+                      asChild
+                    >
+                      <Link href="/help/contact-us">
+                        <MessageSquare className="mr-2 h-4 w-4" />
+                        Contact Us
+                      </Link>
+                    </Button>
+                    <Button
+                      variant={location === "/help/faqs" ? "default" : "ghost"}
+                      className="w-full justify-start"
+                      asChild
+                    >
+                      <Link href="/help/faqs">
+                        <HelpCircle className="mr-2 h-4 w-4" />
+                        FAQs
+                      </Link>
+                    </Button>
+                    <Button
+                      variant={location === "/help/shipping" ? "default" : "ghost"}
+                      className="w-full justify-start"
+                      asChild
+                    >
+                      <Link href="/help/shipping">
+                        <Truck className="mr-2 h-4 w-4" />
+                        Shipping & Returns
+                      </Link>
+                    </Button>
+                    <Button
+                      variant={location === "/help/track-order" ? "default" : "ghost"}
+                      className="w-full justify-start"
+                      asChild
+                    >
+                      <Link href="/help/track-order">
+                        <Package className="mr-2 h-4 w-4" />
+                        Track Order
+                      </Link>
+                    </Button>
+                    <Button
+                      variant={location === "/help/size-guide" ? "default" : "ghost"}
+                      className="w-full justify-start"
+                      asChild
+                    >
+                      <Link href="/help/size-guide">
+                        <Ruler className="mr-2 h-4 w-4" />
+                        Size Guide
+                      </Link>
+                    </Button>
+                  </nav>
                 </div>
               </SheetContent>
             </Sheet>
@@ -390,6 +467,49 @@ export default function SiteHeader() {
               >
                 All Products
               </Link>
+            </li>
+            <li>
+              <DropdownMenu>
+                <DropdownMenuTrigger className={cn(
+                  "transition-colors flex items-center",
+                  location.startsWith("/help") ? "text-primary font-medium" : "text-foreground hover:text-primary"
+                )}>
+                  <span className="mr-1">Help</span>
+                  <HelpCircle className="h-3.5 w-3.5" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start">
+                  <DropdownMenuItem asChild>
+                    <Link href="/help/contact-us" className="flex items-center cursor-pointer">
+                      <MessageSquare className="mr-2 h-4 w-4" />
+                      <span>Contact Us</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/help/faqs" className="flex items-center cursor-pointer">
+                      <HelpCircle className="mr-2 h-4 w-4" />
+                      <span>FAQs</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/help/shipping" className="flex items-center cursor-pointer">
+                      <Truck className="mr-2 h-4 w-4" />
+                      <span>Shipping & Returns</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/help/track-order" className="flex items-center cursor-pointer">
+                      <Package className="mr-2 h-4 w-4" />
+                      <span>Track Order</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/help/size-guide" className="flex items-center cursor-pointer">
+                      <Ruler className="mr-2 h-4 w-4" />
+                      <span>Size Guide</span>
+                    </Link>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </li>
             <li>
               <Link 
