@@ -27,13 +27,14 @@ find $TEMP_DIR -name "node_modules" -type d -exec rm -rf {} +
 find $TEMP_DIR -name ".git" -type d -exec rm -rf {} +
 find $TEMP_DIR -name ".DS_Store" -exec rm -f {} \;
 
-# Create the TAR.GZ file in the current directory
-TAR_FILE="thrax-ecommerce.tar.gz"
+# Create the TAR.GZ file in the project root directory
+CURRENT_DIR=$(pwd)
+TAR_FILE="$CURRENT_DIR/thrax-ecommerce.tar.gz"
 echo "Creating TAR.GZ file: $TAR_FILE"
 cd $TEMP_DIR
-tar -czf "../$TAR_FILE" .
+tar -czf "$TAR_FILE" .
 
-echo "TAR.GZ file created at: ../$TAR_FILE"
+echo "TAR.GZ file created at: $TAR_FILE"
 echo "You can download this file from Replit using the Files panel"
 
 # Clean up
