@@ -398,6 +398,150 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.sendFile("make-admin.html", { root: "./client/public" });
   });
 
+  // Help Pages API
+  app.get("/api/help-pages/:page", async (req, res) => {
+    try {
+      const page = req.params.page;
+      // In a real app, fetch from database
+      // For now, return mock data
+      const contentMap: Record<string, string> = {
+        contactUs: "# Contact Us\n\nWe're here to help with any questions or concerns.",
+        faqs: "# Frequently Asked Questions\n\nFind answers to common questions about our products and services.",
+        shipping: "# Shipping & Returns\n\nLearn about our shipping policies and return process.",
+        trackOrder: "# Track Your Order\n\nCheck the status of your order.",
+        sizeGuide: "# Size Guide\n\nFind the perfect fit with our size charts."
+      };
+      
+      if (!contentMap[page]) {
+        return res.status(404).json({ message: "Page not found" });
+      }
+      
+      res.status(200).json({ content: contentMap[page] });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch help page content" });
+    }
+  });
+  
+  // Admin Help Pages API
+  app.get("/api/admin/help-pages", isAdmin, async (req, res) => {
+    try {
+      // In a real app, fetch from database
+      // For now, return mock data
+      const content = {
+        contactUs: "# Contact Us\n\nWe're here to help with any questions or concerns.",
+        faqs: "# Frequently Asked Questions\n\nFind answers to common questions about our products and services.",
+        shipping: "# Shipping & Returns\n\nLearn about our shipping policies and return process.",
+        trackOrder: "# Track Your Order\n\nCheck the status of your order.",
+        sizeGuide: "# Size Guide\n\nFind the perfect fit with our size charts."
+      };
+      
+      res.status(200).json(content);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch help pages" });
+    }
+  });
+  
+  app.post("/api/admin/help-pages", isAdmin, async (req, res) => {
+    try {
+      // In a real app, save to database
+      // For now, just return success
+      res.status(200).json({ message: "Help pages updated successfully" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to update help pages" });
+    }
+  });
+  
+  // Newsletter Subscribers API
+  app.get("/api/admin/subscribers", isAdmin, async (req, res) => {
+    try {
+      // In a real app, fetch from database
+      // For now, return mock data
+      const subscribers = [
+        { id: 1, email: "john@example.com", createdAt: "2023-05-01T00:00:00Z", active: true },
+        { id: 2, email: "sarah@example.com", createdAt: "2023-05-15T00:00:00Z", active: true },
+        { id: 3, email: "michael@example.com", createdAt: "2023-06-02T00:00:00Z", active: false }
+      ];
+      
+      res.status(200).json(subscribers);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch subscribers" });
+    }
+  });
+  
+  app.post("/api/admin/subscribers", isAdmin, async (req, res) => {
+    try {
+      const { email } = req.body;
+      
+      if (!email) {
+        return res.status(400).json({ message: "Email is required" });
+      }
+      
+      // In a real app, save to database
+      // For now, just return success
+      res.status(201).json({ 
+        id: Math.floor(Math.random() * 1000), 
+        email, 
+        createdAt: new Date().toISOString(),
+        active: true
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to add subscriber" });
+    }
+  });
+  
+  // Newsletter Campaigns API
+  app.get("/api/admin/campaigns", isAdmin, async (req, res) => {
+    try {
+      // In a real app, fetch from database
+      // For now, return mock data
+      const campaigns = [
+        { 
+          id: 1, 
+          subject: "Summer Collection Launch", 
+          content: "Check out our new summer collection...", 
+          sentAt: "2023-06-15T00:00:00Z", 
+          status: "sent",
+          recipients: 245
+        },
+        { 
+          id: 2, 
+          subject: "Flash Sale - 48 Hours Only", 
+          content: "Don't miss our flash sale with up to 50% off...", 
+          sentAt: null, 
+          status: "draft",
+          recipients: 0
+        }
+      ];
+      
+      res.status(200).json(campaigns);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch campaigns" });
+    }
+  });
+  
+  app.post("/api/admin/campaigns", isAdmin, async (req, res) => {
+    try {
+      const { subject, content } = req.body;
+      
+      if (!subject || !content) {
+        return res.status(400).json({ message: "Subject and content are required" });
+      }
+      
+      // In a real app, save to database
+      // For now, just return success
+      res.status(201).json({ 
+        id: Math.floor(Math.random() * 1000), 
+        subject,
+        content,
+        sentAt: null,
+        status: "draft",
+        recipients: 0
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to create campaign" });
+    }
+  });
+
   // Special route to make a user admin by email (for development purposes only)
   app.post("/api/make-admin", async (req, res) => {
     try {
