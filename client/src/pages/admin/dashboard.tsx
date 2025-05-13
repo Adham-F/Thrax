@@ -1,434 +1,249 @@
-import { useState } from "react";
-import { useAuth } from "@/hooks/use-auth";
-import { useQuery } from "@tanstack/react-query";
-import { Helmet } from "react-helmet";
-import { useLocation, Link } from "wouter";
-import SiteHeader from "@/components/site-header";
-import SiteFooter from "@/components/site-footer";
-import { Button } from "@/components/ui/button";
+import AdminLayout from "@/components/admin/layout";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
-import {
-  ShoppingBag,
-  Users,
-  Package,
   BarChart,
-  Settings,
-  PlusCircle,
-  Edit,
-  Trash
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  LineChart,
+  Line,
+  Legend,
+} from "recharts";
+import {
+  Package,
+  ShoppingCart,
+  Users,
+  CircleDollarSign,
+  TrendingUp,
+  ArrowUpRight,
+  ArrowDownRight,
 } from "lucide-react";
 
 export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState("overview");
-  const { user } = useAuth();
-  const [_, navigate] = useLocation();
+  // Sample data for demonstration purposes - will be replaced with API data
+  const salesData = [
+    { name: "Jan", total: 1500 },
+    { name: "Feb", total: 2300 },
+    { name: "Mar", total: 3200 },
+    { name: "Apr", total: 2800 },
+    { name: "May", total: 3700 },
+    { name: "Jun", total: 4100 },
+    { name: "Jul", total: 3800 },
+  ];
 
-  // Redirect if user is not admin
-  if (user && !user.isAdmin) {
-    navigate("/");
-    return null;
-  }
+  const categoryData = [
+    { name: "Tech", value: 42 },
+    { name: "Fashion", value: 28 },
+    { name: "Beauty", value: 18 },
+    { name: "Lifestyle", value: 12 },
+  ];
 
-  // Redirect if not logged in
-  if (!user) {
-    navigate("/auth");
-    return null;
-  }
+  const weeklyData = [
+    { name: "Mon", orders: 15, revenue: 1200 },
+    { name: "Tue", orders: 22, revenue: 1800 },
+    { name: "Wed", orders: 25, revenue: 2100 },
+    { name: "Thu", orders: 18, revenue: 1450 },
+    { name: "Fri", orders: 32, revenue: 2600 },
+    { name: "Sat", orders: 35, revenue: 2800 },
+    { name: "Sun", orders: 28, revenue: 2300 },
+  ];
+
+  const colors = ["#7000FF", "#8D33FF", "#AA66FF", "#C799FF"];
+
+  const stats = [
+    {
+      title: "Total Products",
+      value: "152",
+      change: "+12.5%",
+      trend: "up",
+      icon: <Package className="h-5 w-5" />,
+    },
+    {
+      title: "Total Orders",
+      value: "847",
+      change: "+18.2%",
+      trend: "up",
+      icon: <ShoppingCart className="h-5 w-5" />,
+    },
+    {
+      title: "Total Customers",
+      value: "1,284",
+      change: "+32.1%",
+      trend: "up",
+      icon: <Users className="h-5 w-5" />,
+    },
+    {
+      title: "Total Revenue",
+      value: "$48,285",
+      change: "-4.5%",
+      trend: "down",
+      icon: <CircleDollarSign className="h-5 w-5" />,
+    },
+  ];
 
   return (
-    <>
-      <Helmet>
-        <title>Admin Dashboard | THRAX</title>
-        <meta name="description" content="Manage your THRAX e-commerce store." />
-        <meta property="og:title" content="Admin Dashboard | THRAX" />
-        <meta property="og:description" content="Manage your THRAX e-commerce store." />
-        <meta property="og:type" content="website" />
-      </Helmet>
-
-      <div className="flex min-h-screen flex-col">
-        <SiteHeader />
-        
-        <main className="flex-1 py-8 px-4 bg-background">
-          <div className="container mx-auto">
-            <div className="flex items-center justify-between mb-6">
-              <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground">Logged in as:</span>
-                <span className="text-sm font-medium">{user?.username}</span>
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-              {/* Sidebar */}
-              <div className="md:col-span-3">
-                <Card>
-                  <CardContent className="p-4">
-                    <nav className="space-y-1">
-                      <TabsList className="flex flex-col w-full h-auto bg-transparent gap-1">
-                        <TabsTrigger
-                          value="overview"
-                          onClick={() => setActiveTab("overview")}
-                          className={`justify-start px-3 py-2 h-9 w-full ${
-                            activeTab === "overview" ? "bg-muted" : ""
-                          }`}
-                        >
-                          <BarChart className="mr-2 h-4 w-4" />
-                          Overview
-                        </TabsTrigger>
-                        <TabsTrigger
-                          value="products"
-                          onClick={() => setActiveTab("products")}
-                          className={`justify-start px-3 py-2 h-9 w-full ${
-                            activeTab === "products" ? "bg-muted" : ""
-                          }`}
-                        >
-                          <Package className="mr-2 h-4 w-4" />
-                          Products
-                        </TabsTrigger>
-                        <TabsTrigger
-                          value="orders"
-                          onClick={() => setActiveTab("orders")}
-                          className={`justify-start px-3 py-2 h-9 w-full ${
-                            activeTab === "orders" ? "bg-muted" : ""
-                          }`}
-                        >
-                          <ShoppingBag className="mr-2 h-4 w-4" />
-                          Orders
-                        </TabsTrigger>
-                        <TabsTrigger
-                          value="users"
-                          onClick={() => setActiveTab("users")}
-                          className={`justify-start px-3 py-2 h-9 w-full ${
-                            activeTab === "users" ? "bg-muted" : ""
-                          }`}
-                        >
-                          <Users className="mr-2 h-4 w-4" />
-                          Users
-                        </TabsTrigger>
-                        <TabsTrigger
-                          value="settings"
-                          onClick={() => setActiveTab("settings")}
-                          className={`justify-start px-3 py-2 h-9 w-full ${
-                            activeTab === "settings" ? "bg-muted" : ""
-                          }`}
-                        >
-                          <Settings className="mr-2 h-4 w-4" />
-                          Settings
-                        </TabsTrigger>
-                      </TabsList>
-                    </nav>
-                  </CardContent>
-                </Card>
-              </div>
-              
-              {/* Main Content */}
-              <div className="md:col-span-9">
-                <Tabs value={activeTab} className="w-full">
-                  <TabsContent value="overview" className="mt-0">
-                    <Card>
-                      <CardHeader>
-                        <CardTitle>Dashboard Overview</CardTitle>
-                        <CardDescription>
-                          Get a quick snapshot of your store's performance.
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          <Card>
-                            <CardContent className="p-6 flex flex-col items-center justify-center">
-                              <Package className="h-8 w-8 text-primary mb-2" />
-                              <p className="text-3xl font-bold">24</p>
-                              <p className="text-sm text-muted-foreground">Products</p>
-                            </CardContent>
-                          </Card>
-                          <Card>
-                            <CardContent className="p-6 flex flex-col items-center justify-center">
-                              <ShoppingBag className="h-8 w-8 text-primary mb-2" />
-                              <p className="text-3xl font-bold">12</p>
-                              <p className="text-sm text-muted-foreground">Orders</p>
-                            </CardContent>
-                          </Card>
-                          <Card>
-                            <CardContent className="p-6 flex flex-col items-center justify-center">
-                              <Users className="h-8 w-8 text-primary mb-2" />
-                              <p className="text-3xl font-bold">5</p>
-                              <p className="text-sm text-muted-foreground">Users</p>
-                            </CardContent>
-                          </Card>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </TabsContent>
-                  
-                  <TabsContent value="products" className="mt-0">
-                    <Card>
-                      <CardHeader className="flex flex-row items-center justify-between">
-                        <div>
-                          <CardTitle>Products</CardTitle>
-                          <CardDescription>
-                            Manage your products inventory.
-                          </CardDescription>
-                        </div>
-                        <Button className="flex items-center gap-1">
-                          <PlusCircle className="h-4 w-4" />
-                          Add Product
-                        </Button>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="rounded-md border">
-                          <div className="relative w-full overflow-auto">
-                            <table className="w-full caption-bottom text-sm">
-                              <thead>
-                                <tr className="border-b bg-muted/50 transition-colors">
-                                  <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">ID</th>
-                                  <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Name</th>
-                                  <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Category</th>
-                                  <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Price</th>
-                                  <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Status</th>
-                                  <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Actions</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                <tr className="border-b transition-colors hover:bg-muted/50">
-                                  <td className="p-4 align-middle">1</td>
-                                  <td className="p-4 align-middle">Pro Wireless Earbuds</td>
-                                  <td className="p-4 align-middle">Tech</td>
-                                  <td className="p-4 align-middle">$129.99</td>
-                                  <td className="p-4 align-middle">
-                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-200 dark:text-green-900">
-                                      In Stock
-                                    </span>
-                                  </td>
-                                  <td className="p-4 align-middle">
-                                    <div className="flex items-center gap-2">
-                                      <Button variant="outline" size="sm">
-                                        <Edit className="h-4 w-4" />
-                                      </Button>
-                                      <Button variant="outline" size="sm">
-                                        <Trash className="h-4 w-4" />
-                                      </Button>
-                                    </div>
-                                  </td>
-                                </tr>
-                                <tr className="border-b transition-colors hover:bg-muted/50">
-                                  <td className="p-4 align-middle">2</td>
-                                  <td className="p-4 align-middle">Ultra HD Smart Watch</td>
-                                  <td className="p-4 align-middle">Tech</td>
-                                  <td className="p-4 align-middle">$249.99</td>
-                                  <td className="p-4 align-middle">
-                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-200 dark:text-green-900">
-                                      In Stock
-                                    </span>
-                                  </td>
-                                  <td className="p-4 align-middle">
-                                    <div className="flex items-center gap-2">
-                                      <Button variant="outline" size="sm">
-                                        <Edit className="h-4 w-4" />
-                                      </Button>
-                                      <Button variant="outline" size="sm">
-                                        <Trash className="h-4 w-4" />
-                                      </Button>
-                                    </div>
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </table>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </TabsContent>
-                  
-                  <TabsContent value="orders" className="mt-0">
-                    <Card>
-                      <CardHeader>
-                        <CardTitle>Orders</CardTitle>
-                        <CardDescription>
-                          View and manage customer orders.
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="rounded-md border">
-                          <div className="relative w-full overflow-auto">
-                            <table className="w-full caption-bottom text-sm">
-                              <thead>
-                                <tr className="border-b bg-muted/50 transition-colors">
-                                  <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Order ID</th>
-                                  <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Customer</th>
-                                  <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Date</th>
-                                  <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Amount</th>
-                                  <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Status</th>
-                                  <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Actions</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                <tr className="border-b transition-colors hover:bg-muted/50">
-                                  <td className="p-4 align-middle">#1001</td>
-                                  <td className="p-4 align-middle">John Doe</td>
-                                  <td className="p-4 align-middle">May 10, 2023</td>
-                                  <td className="p-4 align-middle">$379.98</td>
-                                  <td className="p-4 align-middle">
-                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-200 dark:text-blue-900">
-                                      Shipped
-                                    </span>
-                                  </td>
-                                  <td className="p-4 align-middle">
-                                    <Button variant="outline" size="sm">
-                                      View
-                                    </Button>
-                                  </td>
-                                </tr>
-                                <tr className="border-b transition-colors hover:bg-muted/50">
-                                  <td className="p-4 align-middle">#1002</td>
-                                  <td className="p-4 align-middle">Jane Smith</td>
-                                  <td className="p-4 align-middle">May 9, 2023</td>
-                                  <td className="p-4 align-middle">$129.99</td>
-                                  <td className="p-4 align-middle">
-                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-200 dark:text-green-900">
-                                      Delivered
-                                    </span>
-                                  </td>
-                                  <td className="p-4 align-middle">
-                                    <Button variant="outline" size="sm">
-                                      View
-                                    </Button>
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </table>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </TabsContent>
-                  
-                  <TabsContent value="users" className="mt-0">
-                    <Card>
-                      <CardHeader>
-                        <CardTitle>Users</CardTitle>
-                        <CardDescription>
-                          Manage user accounts and permissions.
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="rounded-md border">
-                          <div className="relative w-full overflow-auto">
-                            <table className="w-full caption-bottom text-sm">
-                              <thead>
-                                <tr className="border-b bg-muted/50 transition-colors">
-                                  <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">ID</th>
-                                  <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Username</th>
-                                  <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Email</th>
-                                  <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Role</th>
-                                  <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Joined</th>
-                                  <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Actions</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                <tr className="border-b transition-colors hover:bg-muted/50">
-                                  <td className="p-4 align-middle">1</td>
-                                  <td className="p-4 align-middle">admin</td>
-                                  <td className="p-4 align-middle">admin@thrax.com</td>
-                                  <td className="p-4 align-middle">
-                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-200 dark:text-purple-900">
-                                      Admin
-                                    </span>
-                                  </td>
-                                  <td className="p-4 align-middle">Jan 1, 2023</td>
-                                  <td className="p-4 align-middle">
-                                    <Button variant="outline" size="sm">
-                                      Edit
-                                    </Button>
-                                  </td>
-                                </tr>
-                                <tr className="border-b transition-colors hover:bg-muted/50">
-                                  <td className="p-4 align-middle">2</td>
-                                  <td className="p-4 align-middle">user1</td>
-                                  <td className="p-4 align-middle">user1@example.com</td>
-                                  <td className="p-4 align-middle">
-                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-200 dark:text-blue-900">
-                                      User
-                                    </span>
-                                  </td>
-                                  <td className="p-4 align-middle">Feb 15, 2023</td>
-                                  <td className="p-4 align-middle">
-                                    <Button variant="outline" size="sm">
-                                      Edit
-                                    </Button>
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </table>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </TabsContent>
-                  
-                  <TabsContent value="settings" className="mt-0">
-                    <Card>
-                      <CardHeader>
-                        <CardTitle>Store Settings</CardTitle>
-                        <CardDescription>
-                          Configure your store settings.
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="space-y-4">
-                          <div>
-                            <h3 className="text-lg font-medium">General Settings</h3>
-                            <p className="text-sm text-muted-foreground mb-4">
-                              Configure general store settings.
-                            </p>
-                            <div className="space-y-4">
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                  <label className="text-sm font-medium">Store Name</label>
-                                  <input
-                                    type="text"
-                                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                                    value="THRAX"
-                                    readOnly
-                                  />
-                                </div>
-                                <div className="space-y-2">
-                                  <label className="text-sm font-medium">Contact Email</label>
-                                  <input
-                                    type="email"
-                                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                                    value="contact@thrax.com"
-                                  />
-                                </div>
-                              </div>
-                              <div className="flex justify-end">
-                                <Button>Save Changes</Button>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </TabsContent>
-                </Tabs>
-              </div>
-            </div>
-          </div>
-        </main>
-        
-        <SiteFooter />
+    <AdminLayout>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-3xl font-bold">Dashboard</h1>
       </div>
-    </>
+
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        {stats.map((stat, i) => (
+          <Card key={i}>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div className="bg-primary/10 rounded-full p-2">
+                  {stat.icon}
+                </div>
+                <span className={`flex items-center text-sm ${
+                  stat.trend === "up" 
+                    ? "text-green-500" 
+                    : "text-red-500"
+                }`}>
+                  {stat.change}
+                  {stat.trend === "up" ? (
+                    <ArrowUpRight className="h-4 w-4 ml-1" />
+                  ) : (
+                    <ArrowDownRight className="h-4 w-4 ml-1" />
+                  )}
+                </span>
+              </div>
+              <div className="mt-3">
+                <p className="text-sm font-medium text-muted-foreground">
+                  {stat.title}
+                </p>
+                <h3 className="text-2xl font-bold">{stat.value}</h3>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      <Tabs defaultValue="overview" className="mt-6">
+        <TabsList>
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          <TabsTrigger value="reports">Reports</TabsTrigger>
+        </TabsList>
+        <TabsContent value="overview" className="space-y-4">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+            <Card className="lg:col-span-4">
+              <CardHeader>
+                <CardTitle>Sales Overview</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={salesData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Bar
+                      dataKey="total"
+                      fill="#7000FF"
+                      radius={[4, 4, 0, 0]}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+
+            <Card className="lg:col-span-3">
+              <CardHeader>
+                <CardTitle>Sales by Category</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={300}>
+                  <PieChart>
+                    <Pie
+                      data={categoryData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={80}
+                      paddingAngle={2}
+                      dataKey="value"
+                      label={({name, percent}) => `${name} ${(percent * 100).toFixed(0)}%`}
+                    >
+                      {categoryData.map((entry, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={colors[index % colors.length]}
+                        />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+          </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Weekly Performance</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={weeklyData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis yAxisId="left" orientation="left" />
+                  <YAxis yAxisId="right" orientation="right" />
+                  <Tooltip />
+                  <Legend />
+                  <Line
+                    yAxisId="left"
+                    type="monotone"
+                    dataKey="orders"
+                    stroke="#7000FF"
+                    activeDot={{ r: 8 }}
+                  />
+                  <Line
+                    yAxisId="right"
+                    type="monotone"
+                    dataKey="revenue"
+                    stroke="#00BFFF"
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value="analytics" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Detailed Analytics</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="pt-4 text-center text-muted-foreground">
+                <TrendingUp className="mx-auto h-12 w-12 opacity-50" />
+                <p className="mt-2">Advanced analytics coming soon</p>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value="reports" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Reports</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="pt-4 text-center text-muted-foreground">
+                <TrendingUp className="mx-auto h-12 w-12 opacity-50" />
+                <p className="mt-2">Reports functionality coming soon</p>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </AdminLayout>
   );
 }
