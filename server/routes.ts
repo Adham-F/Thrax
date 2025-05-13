@@ -393,6 +393,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Special route to make a user admin by email (for development purposes only)
+  app.post("/api/make-admin", async (req, res) => {
+    try {
+      const { email } = req.body;
+      
+      if (!email) {
+        return res.status(400).json({ message: "Email is required" });
+      }
+
+      const user = await storage.getUserByEmail(email);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // In a real app, this would update the database
+      // For this prototype with MemStorage, let's directly modify the user object
+      user.isAdmin = true;
+      
+      res.status(200).json({ 
+        message: `User with email ${email} is now an admin`,
+        user: {
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          isAdmin: user.isAdmin
+        } 
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to make user admin" });
+    }
+  });
+
   // Create HTTP server
   const httpServer = createServer(app);
 
