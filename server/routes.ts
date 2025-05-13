@@ -393,6 +393,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Serve the make-admin page directly
+  app.get("/make-admin", (req, res) => {
+    res.sendFile("make-admin.html", { root: "./client/public" });
+  });
+
   // Special route to make a user admin by email (for development purposes only)
   app.post("/api/make-admin", async (req, res) => {
     try {
