@@ -53,6 +53,36 @@ export default function ProfilePage() {
     queryFn: () => apiRequest("GET", "/api/orders").then((res) => res.json()),
     enabled: !!user,
   });
+  
+  const {
+    data: wishlist = [],
+    isLoading: isWishlistLoading,
+  } = useQuery<WishlistItemWithProduct[]>({
+    queryKey: ["/api/wishlist"],
+    queryFn: () => apiRequest("GET", "/api/wishlist").then((res) => res.json()),
+    enabled: !!user,
+  });
+  
+  // Mutation to remove item from wishlist
+  const removeWishlistItemMutation = useMutation({
+    mutationFn: async (itemId: number) => {
+      await apiRequest("DELETE", `/api/wishlist/${itemId}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/wishlist"] });
+      toast({
+        title: "Item removed",
+        description: "The item has been removed from your wishlist",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to remove item from wishlist",
+        variant: "destructive",
+      });
+    },
+  });
 
   if (!user) {
     return <Redirect to="/auth" />;
@@ -499,16 +529,67 @@ export default function ProfilePage() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="py-8 text-center">
-                      <Heart className="h-12 w-12 mx-auto text-muted-foreground opacity-50" />
-                      <h3 className="mt-4 text-lg font-medium">Your wishlist is empty</h3>
-                      <p className="mt-2 text-muted-foreground">
-                        Save items you're interested in for later.
-                      </p>
-                      <Button className="mt-4" asChild>
-                        <Link href="/">Explore Products</Link>
-                      </Button>
-                    </div>
+                    {isWishlistLoading ? (
+                      <div className="py-8 text-center">
+                        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full mx-auto"></div>
+                        <p className="mt-2 text-muted-foreground">Loading your wishlist...</p>
+                      </div>
+                    ) : wishlist.length === 0 ? (
+                      <div className="py-8 text-center">
+                        <Heart className="h-12 w-12 mx-auto text-muted-foreground opacity-50" />
+                        <h3 className="mt-4 text-lg font-medium">Your wishlist is empty</h3>
+                        <p className="mt-2 text-muted-foreground">
+                          Save items you're interested in for later.
+                        </p>
+                        <Button className="mt-4" asChild>
+                          <Link href="/">Explore Products</Link>
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        {wishlist.map((item) => (
+                          <div key={item.id} className="flex items-center justify-between border rounded-lg p-4">
+                            <div className="flex items-center space-x-4">
+                              <div className="h-16 w-16 rounded-md overflow-hidden">
+                                <img 
+                                  src={item.product.imageUrl} 
+                                  alt={item.product.name} 
+                                  className="h-full w-full object-cover"
+                                />
+                              </div>
+                              <div>
+                                <h4 className="font-medium">{item.product.name}</h4>
+                                <p className="text-sm text-muted-foreground">{item.product.category}</p>
+                                <p className="text-sm font-medium mt-1">
+                                  {item.product.isOnSale ? (
+                                    <>
+                                      <span className="text-red-500">${((item.product.price * (100 - item.product.discountPercentage!)) / 10000).toFixed(2)}</span>
+                                      <span className="text-muted-foreground line-through ml-2">${(item.product.price / 100).toFixed(2)}</span>
+                                    </>
+                                  ) : (
+                                    <>${(item.product.price / 100).toFixed(2)}</>
+                                  )}
+                                </p>
+                              </div>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <Button variant="outline" size="sm" asChild>
+                                <Link href={`/product/${item.productId}`}>
+                                  View
+                                </Link>
+                              </Button>
+                              <Button 
+                                variant="outline" 
+                                size="icon" 
+                                onClick={() => removeWishlistItemMutation.mutate(item.id)}
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               </TabsContent>
