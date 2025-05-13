@@ -30,7 +30,7 @@ async function comparePasswords(supplied: string, stored: string) {
 
 export function setupAuth(app: Express) {
   const sessionSettings: session.SessionOptions = {
-    secret: process.env.SESSION_SECRET || "vibe-ecommerce-secret-key",
+    secret: process.env.SESSION_SECRET || "thrax-ecommerce-secret-key",
     resave: false,
     saveUninitialized: false,
     store: storage.sessionStore,
