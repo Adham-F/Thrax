@@ -3,11 +3,37 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    <meta name="theme-color" content="#7000FF" />
+    <meta name="description" content="THRAX - Modern e-commerce platform for trendy products across tech, fashion, and beauty categories." />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" type="image/png" href="/icons/icon-192x192.png" />
+    <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
+    <title>THRAX | Modern Shopping Experience</title>
+    <!-- Open Graph meta tags for better social sharing -->
+    <meta property="og:title" content="THRAX | Modern Shopping Experience" />
+    <meta property="og:description" content="Shop the latest trends in tech, fashion, and beauty at THRAX." />
+    <meta property="og:image" content="/icons/icon-512x512.png" />
+    <meta property="og:url" content="https://thrax.replit.app" />
+    <meta property="og:type" content="website" />
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
     <!-- This is a replit script which adds a banner on the top of the page when opened in development mode outside the replit environment -->
     <script type="text/javascript" src="https://replit.com/public/js/replit-dev-banner.js"></script>
+    <!-- Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/service-worker.js')
+            .then(registration => {
+              console.log('Service Worker registered: ', registration);
+            })
+            .catch(error => {
+              console.log('Service Worker registration failed: ', error);
+            });
+        });
+      }
+    </script>
   </body>
 </html>
