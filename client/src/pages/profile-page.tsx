@@ -30,11 +30,16 @@ import {
   ArrowRight, 
   Check, 
   ShoppingBag, 
-  Clock 
+  Clock,
+  X
 } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
-import { Order, OrderItemWithProduct } from "@shared/schema";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { 
+  Order, 
+  OrderItemWithProduct,
+  WishlistItemWithProduct 
+} from "@shared/schema";
 
 interface OrderWithItems extends Order {
   items: OrderItemWithProduct[];
@@ -358,7 +363,7 @@ export default function ProfilePage() {
                                   </span>
                                 </div>
                                 <div className="text-xs text-muted-foreground mt-1">
-                                  Placed on {new Date(order.createdAt).toLocaleDateString()}
+                                  Placed on {order.createdAt ? new Date(String(order.createdAt)).toLocaleDateString() : 'N/A'}
                                 </div>
                               </div>
                               <div className="flex items-center gap-2">
@@ -443,7 +448,7 @@ export default function ProfilePage() {
                                 <div>
                                   <h4 className="text-sm font-medium">Order #{order.id}</h4>
                                   <p className="text-xs text-muted-foreground">
-                                    Placed on {new Date(order.createdAt).toLocaleDateString()}
+                                    Placed on {order.createdAt ? new Date(String(order.createdAt)).toLocaleDateString() : 'N/A'}
                                   </p>
                                 </div>
                                 <span className={`text-xs px-2 py-0.5 rounded-full ${getOrderStatusColor(order.status)}`}>
