@@ -12,8 +12,11 @@ import ProductPage from "@/pages/product-page";
 import CategoryPage from "@/pages/category-page";
 import CheckoutPage from "@/pages/checkout-page";
 import AuthPage from "@/pages/auth-page";
+import ProfilePage from "@/pages/profile-page";
 import AdminDashboard from "@/pages/admin/dashboard";
+import AdminProducts from "@/pages/admin/products";
 import { ProtectedRoute } from "@/lib/protected-route";
+import { Helmet } from "react-helmet";
 
 function Router() {
   return (
@@ -22,7 +25,13 @@ function Router() {
       <Route path="/product/:id" component={ProductPage} />
       <Route path="/category/:category" component={CategoryPage} />
       <ProtectedRoute path="/checkout" component={CheckoutPage} />
+      <ProtectedRoute path="/profile" component={ProfilePage} />
+      
+      {/* Admin Routes */}
+      <ProtectedRoute path="/admin" component={AdminDashboard} />
       <ProtectedRoute path="/admin/dashboard" component={AdminDashboard} />
+      <ProtectedRoute path="/admin/products" component={AdminProducts} />
+      
       <Route path="/auth" component={AuthPage} />
       <Route component={NotFound} />
     </Switch>

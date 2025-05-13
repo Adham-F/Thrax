@@ -24,10 +24,13 @@ export const products = pgTable("products", {
   imageUrl: text("image_url").notNull(),
   category: text("category").notNull(), // tech, fashion, beauty, lifestyle
   subcategory: text("subcategory"),
+  inventory: integer("inventory").default(0),
   inStock: boolean("in_stock").default(true),
   isNew: boolean("is_new").default(false),
   isPopular: boolean("is_popular").default(false),
   isSale: boolean("is_sale").default(false),
+  isFeatured: boolean("is_featured").default(false),
+  isOnSale: boolean("is_on_sale").default(false),
   discountPercentage: integer("discount_percentage"),
   createdAt: timestamp("created_at").defaultNow(),
 });
