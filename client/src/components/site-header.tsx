@@ -475,7 +475,7 @@ export default function SiteHeader() {
                   location.startsWith("/help") ? "text-primary font-medium" : "text-foreground hover:text-primary"
                 )}>
                   <span className="mr-1">Help</span>
-                  <HelpCircle className="h-3.5 w-3.5" />
+                  <ChevronDown className="h-3.5 w-3.5" />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start">
                   <DropdownMenuItem asChild>
@@ -530,7 +530,7 @@ export default function SiteHeader() {
                   isCategoryActive("fashion") ? "text-primary font-medium" : "text-foreground hover:text-primary"
                 )}
               >
-                Fashion
+                Clothes
               </Link>
             </li>
             <li>
@@ -553,6 +553,17 @@ export default function SiteHeader() {
                 )}
               >
                 Lifestyle
+              </Link>
+            </li>
+            <li>
+              <Link 
+                href="/category/shoes"
+                className={cn(
+                  "transition-colors",
+                  isCategoryActive("shoes") ? "text-primary font-medium" : "text-foreground hover:text-primary"
+                )}
+              >
+                Shoes
               </Link>
             </li>
             <li>
