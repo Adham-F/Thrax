@@ -18,7 +18,6 @@ import {
   Search, 
   User, 
   Heart,
-  ChevronDown, 
   ShoppingBag, 
   Menu, 
   LogOut,
