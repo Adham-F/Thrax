@@ -17,7 +17,8 @@ import { getInitials, debounce } from "@/lib/utils";
 import { 
   Search, 
   User, 
-  Heart, 
+  Heart,
+  ChevronDown, 
   ShoppingBag, 
   Menu, 
   LogOut,
@@ -475,7 +476,7 @@ export default function SiteHeader() {
                   location.startsWith("/help") ? "text-primary font-medium" : "text-foreground hover:text-primary"
                 )}>
                   <span className="mr-1">Help</span>
-                  <ChevronDown className="h-3.5 w-3.5" />
+                  <HelpCircle className="h-3.5 w-3.5" />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start">
                   <DropdownMenuItem asChild>
