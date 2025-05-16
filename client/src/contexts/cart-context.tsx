@@ -1,3 +1,16 @@
+/**
+ * Shopping Cart Context Provider
+ * 
+ * This module implements the shopping cart functionality with these features:
+ * - Cart state management (add, remove, update quantity)
+ * - Cart UI controls (open/close, toggle)
+ * - Cart calculations (total items, total price)
+ * - Persistent cart data through API integration
+ * 
+ * To use cart functionality:
+ * import { useCart } from '@/contexts/cart-context';
+ */
+
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useAuth } from '@/hooks/use-auth';
 import { apiRequest, queryClient } from '@/lib/queryClient';

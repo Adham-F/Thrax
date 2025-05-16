@@ -1,3 +1,14 @@
+/**
+ * Protected Route Component
+ * 
+ * This component restricts access to authenticated users only.
+ * If a user is not logged in, they will be redirected to the auth page.
+ * It also displays a loading spinner while the auth state is being determined.
+ * 
+ * Usage:
+ * <ProtectedRoute path="/profile" component={ProfilePage} />
+ */
+
 import { useAuth } from "@/hooks/use-auth";
 import { Loader2 } from "lucide-react";
 import { Redirect, Route } from "wouter";

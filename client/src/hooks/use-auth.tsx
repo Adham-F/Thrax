@@ -1,3 +1,13 @@
+/**
+ * Authentication Context & Hooks
+ * 
+ * This module provides authentication functionality throughout the application:
+ * - User authentication state management
+ * - Login/logout functionality
+ * - User registration
+ * - Protected route access control
+ */
+
 import { createContext, ReactNode, useContext } from "react";
 import {
   useQuery,
