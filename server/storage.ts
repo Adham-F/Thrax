@@ -46,6 +46,7 @@ export interface IStorage {
   getUserByUsername(username: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  updateUserAdminStatus(userId: number, isAdmin: boolean): Promise<User | undefined>;
 
   // Product methods
   getProducts(): Promise<Product[]>;
@@ -149,6 +150,15 @@ export class MemStorage implements IStorage {
       loyaltyTier: "Bronze"
     };
     this.users.set(id, user);
+    return user;
+  }
+  
+  async updateUserAdminStatus(userId: number, isAdmin: boolean): Promise<User | undefined> {
+    const user = this.users.get(userId);
+    if (!user) return undefined;
+    
+    user.isAdmin = isAdmin;
+    this.users.set(userId, user);
     return user;
   }
 
@@ -878,6 +888,15 @@ export class DatabaseStorage implements IStorage {
 
   async createUser(insertUser: InsertUser): Promise<User> {
     const [user] = await db.insert(users).values(insertUser).returning();
+    return user;
+  }
+  
+  async updateUserAdminStatus(userId: number, isAdmin: boolean): Promise<User | undefined> {
+    const [user] = await db.update(users)
+      .set({ isAdmin })
+      .where(eq(users.id, userId))
+      .returning();
+    
     return user;
   }
 
