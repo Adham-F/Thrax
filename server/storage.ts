@@ -661,7 +661,7 @@ export class MemStorage implements IStorage {
 }
 
 export class DatabaseStorage implements IStorage {
-  sessionStore: any; // Using any to bypass type issues with session stores
+  sessionStore: session.Store;
 
   constructor() {
     this.sessionStore = new PostgresSessionStore({ 
@@ -966,17 +966,25 @@ export class DatabaseStorage implements IStorage {
       insertCartItem.productId
     );
 
+    // Default to quantity 1 if not provided
+    const quantity = insertCartItem.quantity || 1;
+
     if (existingItem) {
       // Update quantity if item exists
       return this.updateCartItem(
         existingItem.id,
-        existingItem.quantity + insertCartItem.quantity
+        existingItem.quantity + quantity
       );
     }
 
-    // Create new cart item
+    // Create new cart item with quantity ensured
+    const updatedCartItem = {
+      ...insertCartItem,
+      quantity // Ensure quantity is always set
+    };
+    
     const [cartItem] = await db.insert(cartItems)
-      .values(insertCartItem)
+      .values(updatedCartItem)
       .returning();
     
     return cartItem;
