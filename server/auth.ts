@@ -1,3 +1,13 @@
+/**
+ * Authentication System
+ * 
+ * This module implements user authentication for the THRAX e-commerce platform:
+ * - Username/password authentication with Passport.js
+ * - Session management
+ * - Password hashing and verification with scrypt
+ * - API endpoints for registration, login, logout, and user info
+ */
+
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import { Express } from "express";
@@ -28,12 +38,20 @@ async function comparePasswords(supplied: string, stored: string) {
   return timingSafeEqual(hashedBuf, suppliedBuf);
 }
 
+/**
+ * Sets up all authentication-related middleware and routes
+ * This function initializes:
+ * 1. Session management
+ * 2. Passport.js authentication
+ * 3. User registration, login, and logout endpoints
+ */
 export function setupAuth(app: Express) {
+  // Configure session management
   const sessionSettings: session.SessionOptions = {
     secret: process.env.SESSION_SECRET || "thrax-ecommerce-secret-key",
     resave: false,
     saveUninitialized: false,
-    store: storage.sessionStore,
+    store: storage.sessionStore, // Use PostgreSQL for session storage
     cookie: {
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
     }
