@@ -1,3 +1,17 @@
+/**
+ * Server API Routes Registration
+ * 
+ * This file handles all API endpoint registrations for the THRAX e-commerce platform.
+ * Routes are organized by functionality:
+ * - Authentication (login, register, logout)
+ * - Products (listing, details, search)
+ * - Shopping Cart (add, remove, update)
+ * - Wishlist (add, remove)
+ * - Orders (create, list, details)
+ * - Admin (product management, user management)
+ * - Payment (Stripe integration)
+ */
+
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
