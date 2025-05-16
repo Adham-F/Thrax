@@ -147,7 +147,8 @@ export class MemStorage implements IStorage {
       createdAt: now,
       isAdmin: false,
       loyaltyPoints: 0,
-      loyaltyTier: "Bronze"
+      loyaltyTier: "Bronze",
+      fullName: insertUser.fullName || null
     };
     this.users.set(id, user);
     return user;
@@ -180,7 +181,20 @@ export class MemStorage implements IStorage {
   async createProduct(insertProduct: InsertProduct): Promise<Product> {
     const id = this.currentProductId++;
     const now = new Date();
-    const product: Product = { ...insertProduct, id, createdAt: now };
+    const product: Product = { 
+      ...insertProduct, 
+      id, 
+      createdAt: now,
+      subcategory: insertProduct.subcategory || null,
+      inventory: insertProduct.inventory || null,
+      inStock: insertProduct.inStock ?? true,
+      isNew: insertProduct.isNew ?? false,
+      isPopular: insertProduct.isPopular ?? false,
+      isSale: insertProduct.isSale ?? false,
+      isFeatured: insertProduct.isFeatured ?? false,
+      isOnSale: insertProduct.isOnSale ?? false,
+      discountPercentage: insertProduct.discountPercentage || null
+    };
     this.products.set(id, product);
     return product;
   }
