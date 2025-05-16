@@ -33,8 +33,10 @@ import { db } from "./db";
 import { eq, like, and, desc, sql } from "drizzle-orm";
 import connectPgSimple from "connect-pg-simple";
 import { pool } from "./db";
+import memorystore from "memorystore";
 
 const PostgresSessionStore = connectPgSimple(session);
+const MemoryStore = memorystore(session);
 
 // modify the interface with any CRUD methods
 // you might need
@@ -76,7 +78,7 @@ export interface IStorage {
   createOrder(order: InsertOrder, orderItems: InsertOrderItem[]): Promise<Order>;
 
   // Session store
-  sessionStore: any;
+  sessionStore: session.Store;
 }
 
 export class MemStorage implements IStorage {
@@ -93,7 +95,7 @@ export class MemStorage implements IStorage {
   currentWishlistItemId: number;
   currentOrderId: number;
   currentOrderItemId: number;
-  sessionStore: session.SessionStore;
+  sessionStore: session.Store;
 
   constructor() {
     this.users = new Map();
@@ -138,7 +140,14 @@ export class MemStorage implements IStorage {
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.currentUserId++;
     const now = new Date();
-    const user: User = { ...insertUser, id, createdAt: now };
+    const user: User = { 
+      ...insertUser, 
+      id, 
+      createdAt: now,
+      isAdmin: false,
+      loyaltyPoints: 0,
+      loyaltyTier: "Bronze"
+    };
     this.users.set(id, user);
     return user;
   }
@@ -229,18 +238,26 @@ export class MemStorage implements IStorage {
       insertCartItem.productId
     );
 
+    // Default to quantity 1 if not provided
+    const quantity = insertCartItem.quantity || 1;
+    
     if (existingItem) {
       // Update quantity if item exists
       return this.updateCartItem(
         existingItem.id,
-        existingItem.quantity + insertCartItem.quantity
+        existingItem.quantity + quantity
       );
     }
 
     // Create new cart item
     const id = this.currentCartItemId++;
     const now = new Date();
-    const cartItem: CartItem = { ...insertCartItem, id, createdAt: now };
+    const cartItem: CartItem = { 
+      ...insertCartItem, 
+      quantity, // Ensure quantity is always set 
+      id, 
+      createdAt: now 
+    };
     this.cartItems.set(id, cartItem);
     return cartItem;
   }
