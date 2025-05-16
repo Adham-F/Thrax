@@ -215,7 +215,12 @@ export class MemStorage implements IStorage {
   async getNewArrivals(): Promise<Product[]> {
     return Array.from(this.products.values())
       .filter((product) => product.isNew)
-      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+      .sort((a, b) => {
+        // Handle null dates safely
+        const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return dateB - dateA;
+      })
       .slice(0, 8);
   }
 
@@ -360,7 +365,12 @@ export class MemStorage implements IStorage {
   async getOrders(userId: number): Promise<Order[]> {
     return Array.from(this.orders.values())
       .filter((order) => order.userId === userId)
-      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+      .sort((a, b) => {
+        // Handle null dates safely
+        const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return dateB - dateA;
+      });
   }
 
   async getOrderById(id: number): Promise<Order | undefined> {
@@ -388,7 +398,14 @@ export class MemStorage implements IStorage {
     // Create order
     const id = this.currentOrderId++;
     const now = new Date();
-    const order: Order = { ...insertOrder, id, createdAt: now };
+    const order: Order = { 
+      ...insertOrder, 
+      id, 
+      createdAt: now,
+      status: insertOrder.status || "pending",
+      shippingDetails: insertOrder.shippingDetails || null,
+      paymentDetails: insertOrder.paymentDetails || null
+    };
     this.orders.set(id, order);
 
     // Create order items
