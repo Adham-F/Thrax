@@ -542,19 +542,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Special route to make a user admin by email (for development purposes only)
+  // Special route to make a user admin by email (specific for the owner's account)
   app.post("/api/make-admin", async (req, res) => {
     try {
       const { email } = req.body;
+      const ownerEmail = "fultonadham@gmail.com";
       
       if (!email) {
         return res.status(400).json({ message: "Email is required" });
       }
 
+      // Only allow the owner's email to be made admin
+      if (email.toLowerCase() !== ownerEmail.toLowerCase()) {
+        return res.status(403).json({ 
+          message: "Unauthorized: Only the owner can be made an admin" 
+        });
+      }
+
       const user = await storage.getUserByEmail(email);
       
       if (!user) {
-        return res.status(404).json({ message: "User not found" });
+        // If user isn't found but it's the owner email, we should create the user
+        // In a full implementation, this would prompt registration first
+        return res.status(404).json({ 
+          message: "Owner account not found. Please register first." 
+        });
       }
       
       // In a real app, this would update the database
