@@ -15,7 +15,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { setupAuth } from "./auth";
+import { setupAuth, hashPassword } from "./auth";
 import { z } from "zod";
 import { 
   insertCartItemSchema, 
@@ -30,6 +30,64 @@ import { createPaymentIntent } from "./stripe";
 export async function registerRoutes(app: Express): Promise<Server> {
   // Set up authentication routes
   setupAuth(app);
+  
+  // Admin account registration endpoint
+  app.post("/api/register-admin", async (req, res) => {
+    try {
+      const { username, password, email, fullName } = req.body;
+      
+      if (!username || !password || !email) {
+        return res.status(400).json({ message: "Username, password, and email are required" });
+      }
+
+      // Check if username or email already exists
+      const existingUser = await storage.getUserByUsername(username) || 
+                           await storage.getUserByEmail(email);
+                           
+      if (existingUser) {
+        return res.status(400).json({ 
+          message: "Username or email already exists" 
+        });
+      }
+
+      // Create the user with admin privileges
+      const user = await storage.createUser({
+        username,
+        password: await hashPassword(password), // Hash the password
+        email,
+        fullName
+      });
+      
+      // Update admin status
+      if (user) {
+        await storage.updateUserAdminStatus(user.id, true);
+      }
+
+      res.status(201).json({ 
+        message: "Admin account created successfully",
+        username,
+        email
+      });
+    } catch (error) {
+      console.error("Error creating admin account:", error);
+      res.status(500).json({ 
+        message: "Failed to create admin account" 
+      });
+    }
+  });
+  
+  // Admin test route to verify admin access
+  app.get("/api/admin/test", isAdmin, (req, res) => {
+    res.status(200).json({ 
+      message: "Admin access verified",
+      user: {
+        id: req.user?.id,
+        username: req.user?.username,
+        email: req.user?.email,
+        isAdmin: req.user?.isAdmin
+      }
+    });
+  });
 
   // Products API
   app.get("/api/products", async (req, res) => {
