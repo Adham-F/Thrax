@@ -1,3 +1,10 @@
+/**
+ * Database Storage Implementation
+ * 
+ * This file implements the storage layer for the THRAX e-commerce platform,
+ * connecting to a PostgreSQL database for persistent data storage.
+ */
+
 import {
   users,
   products,
@@ -69,7 +76,7 @@ export interface IStorage {
   createOrder(order: InsertOrder, orderItems: InsertOrderItem[]): Promise<Order>;
 
   // Session store
-  sessionStore: session.SessionStore;
+  sessionStore: any;
 }
 
 export class MemStorage implements IStorage {
@@ -645,14 +652,15 @@ export class DatabaseStorage implements IStorage {
       createTableIfMissing: true 
     });
 
-    // To initialize the products, uncomment this line after migrating the schema:
-    // this.initializeProductsIfEmpty();
+    // Initialize products in the database if none exist
+    this.initializeProductsIfEmpty();
   }
   
   // Function to initialize products if there are none in the database
   private async initializeProductsIfEmpty() {
     const existingProducts = await db.select({ count: sql`count(*)` }).from(products);
     if (Number(existingProducts[0].count) === 0) {
+      // Tech products
       const techProducts = [
         {
           name: "Pro Wireless Earbuds",
@@ -683,12 +691,155 @@ export class DatabaseStorage implements IStorage {
           isSale: false,
           isFeatured: true,
           isOnSale: false,
+        },
+        {
+          name: "Ultra Phone Pro Max",
+          description: "128GB, Midnight Black with 108MP camera and edge-to-edge display.",
+          price: 89999, // $899.99
+          imageUrl: "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=800&q=80",
+          category: "tech",
+          subcategory: "smartphones",
+          inventory: 50,
+          inStock: true,
+          isNew: false,
+          isPopular: true,
+          isSale: false,
+          isFeatured: true,
+          isOnSale: false,
+        },
+        {
+          name: "UltraBook Pro X15",
+          description: "The ultimate portable powerhouse with 4K display and all-day battery life.",
+          price: 149999, // $1,499.99
+          imageUrl: "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=800&q=80",
+          category: "tech",
+          subcategory: "computers",
+          inventory: 35,
+          inStock: true,
+          isNew: true,
+          isPopular: true,
+          isSale: false,
+          isFeatured: true,
+          isOnSale: false,
         }
       ];
       
-      for (const product of techProducts) {
+      // Fashion products
+      const fashionProducts = [
+        {
+          name: "Oversized Comfort Hoodie",
+          description: "Soft Cotton Blend with a relaxed fit for ultimate comfort.",
+          price: 5999, // $59.99
+          imageUrl: "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=800&q=80",
+          category: "fashion",
+          subcategory: "hoodies",
+          inventory: 120,
+          inStock: true,
+          isNew: false,
+          isPopular: false,
+          isSale: false,
+          isFeatured: false,
+          isOnSale: false,
+        },
+        {
+          name: "Premium Leather Jacket",
+          description: "Handcrafted from premium leather with a classic design for timeless style.",
+          price: 29999, // $299.99
+          imageUrl: "https://images.unsplash.com/photo-1521223890158-f9f7c3d5d504?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=800&q=80",
+          category: "fashion",
+          subcategory: "outerwear",
+          inventory: 45,
+          inStock: true,
+          isNew: true,
+          isPopular: true,
+          isSale: false,
+          isFeatured: true,
+          isOnSale: false,
+        }
+      ];
+      
+      // Beauty products
+      const beautyProducts = [
+        {
+          name: "Hydrating Face Serum",
+          description: "Advanced formula with hyaluronic acid for deep hydration and rejuvenation.",
+          price: 3999, // $39.99
+          imageUrl: "https://images.unsplash.com/photo-1556228578-0d85b1a4d571?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=800&q=80",
+          category: "beauty",
+          subcategory: "skincare",
+          inventory: 85,
+          inStock: true,
+          isNew: true,
+          isPopular: false,
+          isSale: false,
+          isFeatured: false,
+          isOnSale: false,
+        },
+        {
+          name: "Signature Perfume",
+          description: "Elegant fragrance with notes of jasmine, vanilla, and sandalwood.",
+          price: 8499, // $84.99
+          imageUrl: "https://images.unsplash.com/photo-1594035910387-fea47794261f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=800&q=80",
+          category: "beauty",
+          subcategory: "fragrances",
+          inventory: 60,
+          inStock: true,
+          isNew: false,
+          isPopular: true,
+          isSale: true,
+          isFeatured: true,
+          isOnSale: true,
+          discountPercentage: 15,
+        }
+      ];
+      
+      // Lifestyle products
+      const lifestyleProducts = [
+        {
+          name: "Minimalist Desk Lamp",
+          description: "Modern design with adjustable brightness and color temperature.",
+          price: 4999, // $49.99
+          imageUrl: "https://images.unsplash.com/photo-1573297627366-08a519ad413d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=800&q=80",
+          category: "lifestyle",
+          subcategory: "home",
+          inventory: 70,
+          inStock: true,
+          isNew: false,
+          isPopular: false,
+          isSale: false,
+          isFeatured: false,
+          isOnSale: false,
+        },
+        {
+          name: "Premium Yoga Mat",
+          description: "Non-slip surface, eco-friendly materials, perfect for all types of yoga.",
+          price: 7499, // $74.99
+          imageUrl: "https://images.unsplash.com/photo-1607346704512-221c6f1d6f22?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=800&q=80",
+          category: "lifestyle",
+          subcategory: "fitness",
+          inventory: 90,
+          inStock: true,
+          isNew: true,
+          isPopular: true,
+          isSale: false,
+          isFeatured: true,
+          isOnSale: false,
+        }
+      ];
+      
+      // Insert all products
+      const allProducts = [
+        ...techProducts,
+        ...fashionProducts,
+        ...beautyProducts,
+        ...lifestyleProducts
+      ];
+      
+      for (const product of allProducts) {
         await db.insert(products).values(product);
       }
+      
+      console.log('Database initialized with sample products');
     }
   }
 

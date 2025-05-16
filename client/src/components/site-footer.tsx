@@ -263,10 +263,9 @@ export default function SiteFooter({ className }: SiteFooterProps) {
             </div>
             
             <div className="flex flex-wrap justify-center gap-4 text-sm text-muted-foreground">
-              <a href="#" className="hover:text-primary transition-colors">Privacy Policy</a>
-              <a href="#" className="hover:text-primary transition-colors">Terms of Service</a>
-              <a href="#" className="hover:text-primary transition-colors">Cookie Policy</a>
-              <a href="#" className="hover:text-primary transition-colors">Accessibility</a>
+              <Link to="/legal/privacy-policy" className="hover:text-primary transition-colors">Privacy Policy</Link>
+              <Link to="/legal/terms-of-service" className="hover:text-primary transition-colors">Terms of Service</Link>
+              <Link to="/legal/cookie-policy" className="hover:text-primary transition-colors">Cookie Policy</Link>
             </div>
           </div>
           
