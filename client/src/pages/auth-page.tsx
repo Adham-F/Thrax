@@ -108,7 +108,7 @@ export default function AuthPage() {
               <div className="flex justify-between items-center">
                 <div>
                   <a href="/" className="text-xl font-semibold">
-                    <span className="text-primary">VIBE</span>
+                    <span className="text-primary">THRAX</span>
                   </a>
                 </div>
               </div>
@@ -353,13 +353,13 @@ export default function AuthPage() {
                 <svg className="h-5 w-5 mr-2 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
-                Special offers and discounts
+                Easy returns within 30 days
               </li>
               <li className="flex items-center">
                 <svg className="h-5 w-5 mr-2 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
-                Free shipping on orders over $50
+                Secure checkout process
               </li>
               <li className="flex items-center">
                 <svg className="h-5 w-5 mr-2 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor">

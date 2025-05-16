@@ -192,34 +192,24 @@ export default function SiteFooter({ className }: SiteFooterProps) {
               </ul>
             </div>
             
-            {/* About Links */}
+            {/* Legal Links */}
             <div>
-              <h3 className="text-foreground font-bold mb-4">About</h3>
+              <h3 className="text-foreground font-bold mb-4">Legal</h3>
               <ul className="space-y-2">
                 <li>
-                  <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                    Our Story
-                  </a>
+                  <Link to="/legal/privacy-policy" className="text-muted-foreground hover:text-primary transition-colors">
+                    Privacy Policy
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                    Sustainability
-                  </a>
+                  <Link to="/legal/terms-of-service" className="text-muted-foreground hover:text-primary transition-colors">
+                    Terms of Service
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                    Careers
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                    Affiliates
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                    Blog
-                  </a>
+                  <Link to="/legal/cookie-policy" className="text-muted-foreground hover:text-primary transition-colors">
+                    Cookie Policy
+                  </Link>
                 </li>
               </ul>
             </div>

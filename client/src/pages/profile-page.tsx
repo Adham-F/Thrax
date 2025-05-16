@@ -16,7 +16,7 @@ import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import SiteHeader from "@/components/site-header";
 import SiteFooter from "@/components/site-footer";
-import LoyaltyPoints from "@/components/loyalty-points";
+
 import { 
   User, 
   Package, 
@@ -118,7 +118,7 @@ export default function ProfilePage() {
     <>
       <Helmet>
         <title>My Profile | THRAX</title>
-        <meta name="description" content="Manage your account, view orders, and track your loyalty points" />
+        <meta name="description" content="Manage your account and view your orders" />
       </Helmet>
       
       <div className="flex flex-col min-h-screen">
