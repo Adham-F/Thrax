@@ -31,7 +31,9 @@ import {
   Check, 
   ShoppingBag, 
   Clock,
-  X
+  X,
+  Truck,
+  Rotate3d
 } from "lucide-react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
