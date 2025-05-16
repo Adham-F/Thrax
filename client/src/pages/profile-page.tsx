@@ -212,43 +212,41 @@ export default function ProfilePage() {
                   
                   <Card>
                     <CardHeader>
-                      <CardTitle>Loyalty Program</CardTitle>
+                      <CardTitle>Customer Support</CardTitle>
                       <CardDescription>
-                        Your current status and benefits.
+                        Need help with your orders?
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <LoyaltyPoints className="mb-4" />
-                      <div className="space-y-2 mt-8">
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-muted-foreground">Current Points</span>
-                          <span className="font-medium">{user.loyaltyPoints || 0} pts</span>
+                      <div className="space-y-4">
+                        <div className="flex items-center space-x-3">
+                          <Mail className="h-5 w-5 text-muted-foreground" />
+                          <div>
+                            <p className="font-medium">Email Support</p>
+                            <p className="text-sm text-muted-foreground">support@thrax.com</p>
+                          </div>
                         </div>
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-muted-foreground">Current Tier</span>
-                          <span className="font-medium">{user.loyaltyTier || "Bronze"}</span>
+                        <div className="flex items-center space-x-3">
+                          <Package className="h-5 w-5 text-muted-foreground" />
+                          <div>
+                            <p className="font-medium">Shipping Issues</p>
+                            <p className="text-sm text-muted-foreground">Track or report problems with your delivery</p>
+                          </div>
                         </div>
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-muted-foreground">Points to Next Tier</span>
-                          <span className="font-medium">
-                            {user.loyaltyTier === "Bronze" ? (
-                              "200 pts to Silver"
-                            ) : user.loyaltyTier === "Silver" ? (
-                              "300 pts to Gold"
-                            ) : user.loyaltyTier === "Gold" ? (
-                              "500 pts to Platinum"
-                            ) : user.loyaltyTier === "Platinum" ? (
-                              "1000 pts to Diamond"
-                            ) : (
-                              "Max tier reached"
-                            )}
-                          </span>
+                        <div className="flex items-center space-x-3">
+                          <Truck className="h-5 w-5 text-muted-foreground" />
+                          <div>
+                            <p className="font-medium">Returns</p>
+                            <p className="text-sm text-muted-foreground">30-day hassle-free return policy</p>
+                          </div>
                         </div>
                       </div>
                     </CardContent>
                     <CardFooter>
-                      <Button variant="outline" className="w-full">
-                        Learn More About Rewards
+                      <Button variant="outline" className="w-full" asChild>
+                        <Link href="/help/contact-us">
+                          Contact Support <ArrowRight className="ml-2 h-4 w-4" />
+                        </Link>
                       </Button>
                     </CardFooter>
                   </Card>
