@@ -24,10 +24,10 @@ import {
 import session from "express-session";
 import { db } from "./db";
 import { eq, like, and, desc, sql } from "drizzle-orm";
-import connectPg from "connect-pg-simple";
+import connectPgSimple from "connect-pg-simple";
 import { pool } from "./db";
 
-const PostgresSessionStore = connectPg(session);
+const PostgresSessionStore = connectPgSimple(session);
 
 // modify the interface with any CRUD methods
 // you might need
@@ -636,4 +636,306 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+export class DatabaseStorage implements IStorage {
+  sessionStore: any; // Using any to bypass type issues with session stores
+
+  constructor() {
+    this.sessionStore = new PostgresSessionStore({ 
+      pool, 
+      createTableIfMissing: true 
+    });
+
+    // To initialize the products, uncomment this line after migrating the schema:
+    // this.initializeProductsIfEmpty();
+  }
+  
+  // Function to initialize products if there are none in the database
+  private async initializeProductsIfEmpty() {
+    const existingProducts = await db.select({ count: sql`count(*)` }).from(products);
+    if (Number(existingProducts[0].count) === 0) {
+      const techProducts = [
+        {
+          name: "Pro Wireless Earbuds",
+          description: "Premium Sound Quality with active noise cancellation and long battery life.",
+          price: 12999, // $129.99
+          imageUrl: "https://images.unsplash.com/photo-1606220838315-056192d5e927?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=800&q=80",
+          category: "tech",
+          subcategory: "audio",
+          inventory: 100,
+          inStock: true,
+          isNew: true,
+          isPopular: false,
+          isSale: false,
+          isFeatured: false,
+          isOnSale: false,
+        },
+        {
+          name: "NextGen Smartwatch",
+          description: "Health & Fitness Tracking with heart rate monitor, sleep tracker, and GPS.",
+          price: 19999, // $199.99
+          imageUrl: "https://images.unsplash.com/photo-1546868871-7041f2a55e12?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=800&q=80",
+          category: "tech",
+          subcategory: "wearables",
+          inventory: 75,
+          inStock: true,
+          isNew: false,
+          isPopular: true,
+          isSale: false,
+          isFeatured: true,
+          isOnSale: false,
+        }
+      ];
+      
+      for (const product of techProducts) {
+        await db.insert(products).values(product);
+      }
+    }
+  }
+
+  // User methods
+  async getUser(id: number): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user;
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user;
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [user] = await db.insert(users).values(insertUser).returning();
+    return user;
+  }
+
+  // Product methods
+  async getProducts(): Promise<Product[]> {
+    return await db.select().from(products);
+  }
+
+  async getProductsByCategory(category: string): Promise<Product[]> {
+    return await db.select().from(products).where(eq(products.category, category));
+  }
+
+  async getProductById(id: number): Promise<Product | undefined> {
+    const [product] = await db.select().from(products).where(eq(products.id, id));
+    return product;
+  }
+
+  async createProduct(insertProduct: InsertProduct): Promise<Product> {
+    const [product] = await db.insert(products).values(insertProduct).returning();
+    return product;
+  }
+
+  async searchProducts(query: string): Promise<Product[]> {
+    if (!query) return this.getProducts();
+
+    const lowercaseQuery = `%${query.toLowerCase()}%`;
+    return await db.select().from(products).where(
+      sql`lower(${products.name}) like ${lowercaseQuery} OR 
+          lower(${products.description}) like ${lowercaseQuery} OR 
+          lower(${products.category}) like ${lowercaseQuery} OR 
+          lower(${products.subcategory}) like ${lowercaseQuery}`
+    );
+  }
+
+  async getNewArrivals(): Promise<Product[]> {
+    return await db.select().from(products)
+      .where(eq(products.isNew, true))
+      .orderBy(desc(products.createdAt))
+      .limit(8);
+  }
+
+  async getPopularProducts(): Promise<Product[]> {
+    return await db.select().from(products)
+      .where(eq(products.isPopular, true))
+      .limit(8);
+  }
+
+  async getSaleProducts(): Promise<Product[]> {
+    return await db.select().from(products)
+      .where(eq(products.isSale, true))
+      .limit(8);
+  }
+
+  // Cart methods
+  async getCartItems(userId: number): Promise<CartItemWithProduct[]> {
+    const items = await db.select({
+      id: cartItems.id,
+      userId: cartItems.userId,
+      productId: cartItems.productId,
+      quantity: cartItems.quantity,
+      createdAt: cartItems.createdAt,
+      product: products
+    })
+    .from(cartItems)
+    .innerJoin(products, eq(cartItems.productId, products.id))
+    .where(eq(cartItems.userId, userId));
+
+    return items as unknown as CartItemWithProduct[];
+  }
+
+  async getCartItem(userId: number, productId: number): Promise<CartItem | undefined> {
+    const [item] = await db.select()
+      .from(cartItems)
+      .where(and(
+        eq(cartItems.userId, userId),
+        eq(cartItems.productId, productId)
+      ));
+    
+    return item;
+  }
+
+  async addToCart(insertCartItem: InsertCartItem): Promise<CartItem> {
+    // Check if item already exists
+    const existingItem = await this.getCartItem(
+      insertCartItem.userId,
+      insertCartItem.productId
+    );
+
+    if (existingItem) {
+      // Update quantity if item exists
+      return this.updateCartItem(
+        existingItem.id,
+        existingItem.quantity + insertCartItem.quantity
+      );
+    }
+
+    // Create new cart item
+    const [cartItem] = await db.insert(cartItems)
+      .values(insertCartItem)
+      .returning();
+    
+    return cartItem;
+  }
+
+  async updateCartItem(id: number, quantity: number): Promise<CartItem> {
+    const [updatedItem] = await db.update(cartItems)
+      .set({ quantity })
+      .where(eq(cartItems.id, id))
+      .returning();
+    
+    if (!updatedItem) {
+      throw new Error(`Cart item with ID ${id} not found`);
+    }
+    
+    return updatedItem;
+  }
+
+  async removeFromCart(id: number): Promise<void> {
+    await db.delete(cartItems).where(eq(cartItems.id, id));
+  }
+
+  async clearCart(userId: number): Promise<void> {
+    await db.delete(cartItems).where(eq(cartItems.userId, userId));
+  }
+
+  // Wishlist methods
+  async getWishlistItems(userId: number): Promise<WishlistItemWithProduct[]> {
+    const items = await db.select({
+      id: wishlistItems.id,
+      userId: wishlistItems.userId,
+      productId: wishlistItems.productId,
+      createdAt: wishlistItems.createdAt,
+      product: products
+    })
+    .from(wishlistItems)
+    .innerJoin(products, eq(wishlistItems.productId, products.id))
+    .where(eq(wishlistItems.userId, userId));
+
+    return items as unknown as WishlistItemWithProduct[];
+  }
+
+  async getWishlistItem(userId: number, productId: number): Promise<WishlistItem | undefined> {
+    const [item] = await db.select()
+      .from(wishlistItems)
+      .where(and(
+        eq(wishlistItems.userId, userId),
+        eq(wishlistItems.productId, productId)
+      ));
+    
+    return item;
+  }
+
+  async addToWishlist(insertWishlistItem: InsertWishlistItem): Promise<WishlistItem> {
+    // Check if item already exists
+    const existingItem = await this.getWishlistItem(
+      insertWishlistItem.userId,
+      insertWishlistItem.productId
+    );
+
+    if (existingItem) {
+      return existingItem;
+    }
+
+    // Create new wishlist item
+    const [wishlistItem] = await db.insert(wishlistItems)
+      .values(insertWishlistItem)
+      .returning();
+    
+    return wishlistItem;
+  }
+
+  async removeFromWishlist(id: number): Promise<void> {
+    await db.delete(wishlistItems).where(eq(wishlistItems.id, id));
+  }
+
+  // Order methods
+  async getOrders(userId: number): Promise<Order[]> {
+    return await db.select()
+      .from(orders)
+      .where(eq(orders.userId, userId))
+      .orderBy(desc(orders.createdAt));
+  }
+
+  async getOrderById(id: number): Promise<Order | undefined> {
+    const [order] = await db.select()
+      .from(orders)
+      .where(eq(orders.id, id));
+    
+    return order;
+  }
+
+  async getOrderItems(orderId: number): Promise<OrderItemWithProduct[]> {
+    const items = await db.select({
+      id: orderItems.id,
+      orderId: orderItems.orderId,
+      productId: orderItems.productId,
+      quantity: orderItems.quantity,
+      priceAtPurchase: orderItems.priceAtPurchase,
+      createdAt: orderItems.createdAt,
+      product: products
+    })
+    .from(orderItems)
+    .innerJoin(products, eq(orderItems.productId, products.id))
+    .where(eq(orderItems.orderId, orderId));
+
+    return items as unknown as OrderItemWithProduct[];
+  }
+
+  async createOrder(insertOrder: InsertOrder, insertOrderItems: InsertOrderItem[]): Promise<Order> {
+    // Create order
+    const [order] = await db.insert(orders)
+      .values(insertOrder)
+      .returning();
+
+    // Create order items
+    for (const item of insertOrderItems) {
+      await db.insert(orderItems)
+        .values({
+          ...item,
+          orderId: order.id,
+        });
+    }
+
+    return order;
+  }
+}
+
+// Initialize database storage
+export const storage = new DatabaseStorage();
