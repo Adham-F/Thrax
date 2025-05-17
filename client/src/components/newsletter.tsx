@@ -59,9 +59,9 @@ export default function Newsletter({ className }: NewsletterProps) {
   return (
     <section className={cn("py-16 px-4 bg-gradient-to-r from-primary-dark to-primary", className)}>
       <div className="container mx-auto text-center max-w-2xl">
-        <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Join the THRAX</h2>
+        <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">THRAX Newsletter</h2>
         <p className="text-white/80 mb-8">
-          Subscribe to get exclusive deals, early access to new products, and personalized recommendations.
+          Subscribe to get exclusive deals, early access to new products, and personalized recommendations. Coming soon!
         </p>
         
         <Form {...form}>

@@ -34,10 +34,10 @@ export default function HomePage() {
   return (
     <>
       <Helmet>
-        <title>THRAX - Trendy Products for Gen Z</title>
-        <meta name="description" content="Discover the latest in tech, fashion, and lifestyle products curated for the next generation. Shop trendy clothes, tech gadgets, beauty products and more." />
-        <meta property="og:title" content="THRAX - Trendy Products for Gen Z" />
-        <meta property="og:description" content="Discover the latest in tech, fashion, and lifestyle products curated for the next generation." />
+        <title>THRAX </title>
+        <meta name="description" content="The latest tech, fashion, and lifestyle products curated in one place; shop in luxury!" />
+        <meta property="og:title" content="THRAX" />
+        <meta property="og:description" content="The latest tech, fashion, and lifestyle products curated in one place; shop in luxury" />
         <meta property="og:type" content="website" />
       </Helmet>
     
