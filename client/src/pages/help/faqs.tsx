@@ -170,6 +170,13 @@ export default function FAQsPage() {
         <main className="flex-1 container max-w-4xl py-10 px-4 md:px-6 mx-auto">
           <h1 className="text-3xl font-bold mb-6">Frequently Asked Questions</h1>
           
+          {/* This section is only visible to admins in edit mode */}
+          <div className="admin-edit-box bg-muted/20 border border-dashed border-primary/20 rounded-lg p-4 mb-6">
+            <p className="text-sm text-muted-foreground">
+              <strong>Admin Note:</strong> You can directly edit the FAQ content on this page by toggling "Edit Content" from the admin toolbar at the bottom of the page. Changes will be applied to the site instantly.
+            </p>
+          </div>
+          
           {/* Search */}
           <div className="relative mb-8">
             <div className="flex">

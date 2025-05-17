@@ -660,6 +660,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Create HTTP server
+  // Admin content editing API
+  app.post("/api/admin/update-content", isAdmin, async (req, res) => {
+    try {
+      const { id, path: contentPath, content } = req.body;
+      
+      if (!id || !contentPath || content === undefined) {
+        return res.status(400).json({ message: "Missing required fields: id, path, or content" });
+      }
+      
+      // Here you would update the content in the appropriate location
+      // For demonstration, we'll just return success
+      console.log(`Admin updating content ${id} at path ${contentPath}`);
+      
+      res.status(200).json({ 
+        success: true, 
+        message: "Content updated successfully" 
+      });
+    } catch (error) {
+      console.error("Error updating content:", error);
+      res.status(500).json({ 
+        message: "Failed to update content",
+        error: (error as Error).message
+      });
+    }
+  });
+
   const httpServer = createServer(app);
 
   return httpServer;

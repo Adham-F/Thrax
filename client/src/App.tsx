@@ -10,7 +10,9 @@ import { Helmet } from "react-helmet";
 // Context providers
 import { AuthProvider } from "@/hooks/use-auth";
 import { CartProvider } from "@/contexts/cart-context";
+import { AdminEditProvider } from "@/contexts/admin-edit-context";
 import { ProtectedRoute } from "@/lib/protected-route";
+import { AdminToolbar } from "@/components/admin/admin-toolbar";
 
 // Main pages
 import NotFound from "@/pages/not-found";
@@ -87,10 +89,13 @@ function App() {
       <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
         <AuthProvider>
           <CartProvider>
-            <TooltipProvider>
-              <Toaster />
-              <Router />
-            </TooltipProvider>
+            <AdminEditProvider>
+              <TooltipProvider>
+                <Toaster />
+                <Router />
+                <AdminToolbar />
+              </TooltipProvider>
+            </AdminEditProvider>
           </CartProvider>
         </AuthProvider>
       </ThemeProvider>
