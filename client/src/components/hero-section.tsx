@@ -29,19 +29,18 @@ export default function HeroSection({ className }: HeroSectionProps) {
       
       {/* Hero background with overlay */}
       <div className="h-[500px] md:h-[600px] bg-dark-lighter relative overflow-hidden">
-        <EditableText
-          id="hero-image"
-          path="db:site_content:value:hero-image"
-          location="Hero section background image"
-        >
-          {defaultImage}
-        </EditableText>
+        <div className="hidden">
+          <EditableText
+            id="hero-image"
+            path="db:site_content:value:hero-image"
+            location="Hero section background image"
+          >
+            {defaultImage}
+          </EditableText>
+        </div>
         
         <img 
-          src={user?.isAdmin && isEditMode ? (
-            // When in edit mode, use the value from the editable content component
-            document.getElementById("hero-image")?.textContent || defaultImage
-          ) : defaultImage}
+          src={defaultImage}
           alt="Trendy fashion model in stylish outfit" 
           className="w-full h-full object-cover object-center opacity-70"
         />

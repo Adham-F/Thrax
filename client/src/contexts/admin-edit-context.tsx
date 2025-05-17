@@ -182,8 +182,20 @@ export function AdminEditProvider({ children }: { children: ReactNode }) {
 
 export function useAdminEdit() {
   const context = useContext(AdminEditContext);
+  // Return a default non-editing context if used outside provider
+  // This prevents errors when components use this hook outside the provider
   if (context === undefined) {
-    throw new Error("useAdminEdit must be used within an AdminEditProvider");
+    return {
+      isEditMode: false,
+      toggleEditMode: () => {},
+      editableContent: [],
+      registerEditableContent: () => {},
+      unregisterEditableContent: () => {},
+      updateContent: () => {},
+      saveChanges: async () => {},
+      discardChanges: () => {},
+      isSaving: false
+    };
   }
   return context;
 }

@@ -91,7 +91,7 @@ export function EditableContent({
   
   return (
     <div className={`relative group ${className}`}>
-      <div className="absolute -top-3 -right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+      <div className="absolute -top-3 -right-3 opacity-0 group-hover:opacity-100 transition-opacity z-10">
         <Button
           size="icon"
           variant="secondary"
@@ -102,7 +102,11 @@ export function EditableContent({
         </Button>
       </div>
       <div className="border border-dashed border-primary/40 p-1 min-h-[20px] rounded-sm">
-        {typeof children === "string" ? currentContent : children}
+        {/* Use dangerouslySetInnerHTML for string content to avoid nesting issues */}
+        {typeof children === "string" ? 
+          <div dangerouslySetInnerHTML={{ __html: currentContent }} /> : 
+          children
+        }
       </div>
     </div>
   );
