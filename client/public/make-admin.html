@@ -74,14 +74,10 @@
         <form id="adminForm">
             <div>
                 <label for="email">Email Address:</label>
-                <input 
-                    type="email" 
-                    id="email" 
-                    name="email" 
-                    placeholder="Enter your email" 
-                    value="fultonadham@gmail.com" 
-                    required
-                />
+                <select id="email" name="email" required>
+                    <option value="fultonadham@gmail.com">fultonadham@gmail.com</option>
+                    <option value="admin@thrax.com">admin@thrax.com</option>
+                </select>
             </div>
             <button type="submit">Make Admin</button>
         </form>

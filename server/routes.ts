@@ -614,36 +614,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Special route to make a user admin by email (specific for the owner's account)
+  // Special route to make a user admin by email (specific for the owner's account or admin@thrax.com)
   app.post("/api/make-admin", async (req, res) => {
     try {
       const { email } = req.body;
-      const ownerEmail = "fultonadham@gmail.com";
+      // Allow both the owner's email and the admin@thrax.com
+      const allowedEmails = ["fultonadham@gmail.com", "admin@thrax.com"];
       
       if (!email) {
         return res.status(400).json({ message: "Email is required" });
       }
 
-      // Only allow the owner's email to be made admin
-      if (email.toLowerCase() !== ownerEmail.toLowerCase()) {
+      // Check if the email is in the allowed list
+      const isAllowed = allowedEmails.some(e => 
+        e.toLowerCase() === email.toLowerCase()
+      );
+      
+      if (!isAllowed) {
         return res.status(403).json({ 
-          message: "Unauthorized: Only the owner can be made an admin" 
+          message: "Unauthorized: Only the owner or admin@thrax.com can be made an admin" 
         });
       }
 
       const user = await storage.getUserByEmail(email);
       
       if (!user) {
-        // If user isn't found but it's the owner email, we should create the user
-        // In a full implementation, this would prompt registration first
         return res.status(404).json({ 
-          message: "Owner account not found. Please register first." 
+          message: "Account not found. Please register first with this email." 
         });
       }
       
-      // In a real app, this would update the database
-      // For this prototype with MemStorage, let's directly modify the user object
-      user.isAdmin = true;
+      // Update the user's admin status
+      await storage.updateUserAdminStatus(user.id, true);
       
       res.status(200).json({ 
         message: `User with email ${email} is now an admin`,
