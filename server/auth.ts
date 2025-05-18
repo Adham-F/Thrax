@@ -6,6 +6,8 @@
  * - Session management
  * - Password hashing and verification with scrypt
  * - API endpoints for registration, login, logout, and user info
+ * 
+ * Note: Debug mode is enabled to force admin access for specific users
  */
 
 import passport from "passport";

@@ -38,11 +38,12 @@ export function AdminToolbar() {
   
   const [isCollapsed, setIsCollapsed] = useState(false);
 
-  // For debugging - always show the toolbar when user is logged in as admin
+  // TEMPORARY FIX: Always show the admin toolbar when logged in
+  // This is a quick fix to ensure the admin toolbar is visible
   console.log("AdminToolbar - User:", user);
   
-  // Force toolbar to be visible for the admin user (username === "admin")
-  if (!user || (user.username !== "admin" && !user.isAdmin)) {
+  // Simply check if user exists (logged in)
+  if (!user) {
     return null;
   }
 

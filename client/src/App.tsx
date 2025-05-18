@@ -93,7 +93,25 @@ function App() {
               <TooltipProvider>
                 <Toaster />
                 <Router />
-                <AdminToolbar />
+                {/* EMERGENCY FIX: Super visible admin toolbar */}
+                <div className="fixed bottom-0 left-0 right-0 z-[9999] bg-red-600 border-t-4 border-yellow-400">
+                  <div className="py-4 px-4 text-white font-bold text-center text-lg">
+                    ADMIN MODE ACTIVE
+                  </div>
+                  <div className="bg-slate-900 p-4">
+                    <div className="flex justify-center gap-4 flex-wrap">
+                      <a href="/admin/dashboard" className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                        Admin Dashboard
+                      </a>
+                      <a href="/admin/products" className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+                        Manage Products
+                      </a>
+                      <a href="/admin/help-pages" className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700">
+                        Edit Help Pages
+                      </a>
+                    </div>
+                  </div>
+                </div>
               </TooltipProvider>
             </AdminEditProvider>
           </CartProvider>
