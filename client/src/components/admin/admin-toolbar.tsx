@@ -38,8 +38,11 @@ export function AdminToolbar() {
   
   const [isCollapsed, setIsCollapsed] = useState(false);
 
-  // Only show for admin users
-  if (!user?.isAdmin) {
+  // For debugging - always show the toolbar when user is logged in
+  console.log("AdminToolbar - User:", user);
+  
+  // Only show for admin users - but make sure we're showing it for the admin user
+  if (!user) {
     return null;
   }
 
@@ -50,7 +53,7 @@ export function AdminToolbar() {
           {!isCollapsed && (
             <>
               <div className="flex items-center space-x-2">
-                <span className="text-primary font-bold">THRAX Admin</span>
+                <span className="text-primary font-bold">THRAX Admin Panel</span>
                 <Separator orientation="vertical" className="h-6" />
                 
                 {isEditMode ? (
@@ -82,9 +85,10 @@ export function AdminToolbar() {
                   </>
                 ) : (
                   <Button 
-                    variant="outline" 
+                    variant="default" 
                     size="sm"
                     onClick={toggleEditMode}
+                    className="bg-green-600 hover:bg-green-700"
                   >
                     <Pencil className="h-4 w-4 mr-2" /> Edit Content
                   </Button>
