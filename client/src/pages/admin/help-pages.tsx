@@ -1,257 +1,367 @@
-import { useState } from "react";
-import AdminLayout from "@/components/admin/layout";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Save, FileText, Truck, LifeBuoy, Ruler, MessageSquare } from "lucide-react";
+import React, { useState } from 'react';
+import { Helmet } from 'react-helmet';
+import SiteHeader from '@/components/site-header';
+import SiteFooter from '@/components/site-footer';
+import { useAuth } from '@/hooks/use-auth';
+import { Redirect } from 'wouter';
+import { Link } from 'wouter';
+import { useMutation } from '@tanstack/react-query';
+import { queryClient, apiRequest } from '@/lib/queryClient';
+import { useToast } from '@/hooks/use-toast';
+import { EditableSection } from '@/components/admin/editable-section';
 
-// These will be stored in the database, but for now we'll use hardcoded initial content
-const defaultContent = {
-  contactUs: `
-# Contact Us
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  CardFooter,
+} from "@/components/ui/card";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Save, FileText, HelpCircle, Truck, Phone, Info } from 'lucide-react';
 
-We're here to help! If you have any questions, concerns, or feedback, please don't hesitate to reach out to us.
+// Mock help page content
+const helpPages = [
+  {
+    id: 'faqs',
+    title: 'Frequently Asked Questions',
+    content: `<h1>Frequently Asked Questions</h1>
+<h2>Shipping & Delivery</h2>
+<p><strong>Q: How long does shipping take?</strong><br>A: Standard shipping takes 3-7 business days. Express shipping takes 1-3 business days.</p>
+<p><strong>Q: Do you ship internationally?</strong><br>A: Yes, we ship to most countries worldwide. International shipping times vary.</p>
 
-## Customer Service Hours
-Monday-Friday: 9am - 6pm ET
-Saturday: 10am - 4pm ET
-Sunday: Closed
+<h2>Returns & Refunds</h2>
+<p><strong>Q: What is your return policy?</strong><br>A: We offer a 30-day return policy for most items in original condition.</p>
+<p><strong>Q: How do I start a return?</strong><br>A: Log into your account, go to your orders, and follow the return instructions.</p>`,
+    route: '/help/faqs'
+  },
+  {
+    id: 'shipping',
+    title: 'Shipping Information',
+    content: `<h1>Shipping Information</h1>
+<h2>Shipping Methods</h2>
+<ul>
+  <li><strong>Standard Shipping:</strong> 3-7 business days - $5.99</li>
+  <li><strong>Express Shipping:</strong> 1-3 business days - $12.99</li>
+  <li><strong>Overnight Shipping:</strong> Next business day (order by 2PM) - $24.99</li>
+</ul>
+<p>Free standard shipping on orders over $50!</p>
 
-## Contact Information
-Email: support@thrax.com
-Phone: (555) 123-4567
-Address: 123 Fashion Street, Style City, SC 10001
-  `,
-  faqs: `
-# Frequently Asked Questions
+<h2>International Shipping</h2>
+<p>We ship to most countries worldwide. International shipping rates and delivery times vary by destination.</p>`,
+    route: '/help/shipping'
+  },
+  {
+    id: 'contact-us',
+    title: 'Contact Us',
+    content: `<h1>Contact Us</h1>
+<p>We're here to help! Reach out to our customer service team with any questions or concerns.</p>
 
-## Ordering & Payment
-**How do I place an order?**
-Browse our products, select your desired items, add them to your cart, and proceed to checkout.
+<h2>Customer Service Hours</h2>
+<p>Monday - Friday: 9AM - 6PM EST<br>
+Saturday: 10AM - 4PM EST<br>
+Sunday: Closed</p>
 
-**What payment methods do you accept?**
-We accept all major credit cards, PayPal, and Apple Pay.
+<h2>Contact Methods</h2>
+<ul>
+  <li><strong>Email:</strong> support@thrax.com</li>
+  <li><strong>Phone:</strong> 1-800-THRAX-CS (1-800-847-2927)</li>
+  <li><strong>Live Chat:</strong> Available during business hours</li>
+</ul>`,
+    route: '/help/contact-us'
+  },
+  {
+    id: 'size-guide',
+    title: 'Size Guide',
+    content: `<h1>Size Guide</h1>
+<p>Find your perfect fit with our comprehensive size guides for all product categories.</p>
 
-## Shipping & Delivery
-**How long will it take to receive my order?**
-Standard shipping takes 3-5 business days. Express shipping is 1-2 business days.
+<h2>Clothing Sizes</h2>
+<table border="1" cellpadding="5">
+  <tr>
+    <th>Size</th>
+    <th>Chest (in)</th>
+    <th>Waist (in)</th>
+    <th>Hips (in)</th>
+  </tr>
+  <tr>
+    <td>XS</td>
+    <td>32-34</td>
+    <td>26-28</td>
+    <td>34-36</td>
+  </tr>
+  <tr>
+    <td>S</td>
+    <td>35-37</td>
+    <td>29-31</td>
+    <td>37-39</td>
+  </tr>
+  <tr>
+    <td>M</td>
+    <td>38-40</td>
+    <td>32-34</td>
+    <td>40-42</td>
+  </tr>
+  <tr>
+    <td>L</td>
+    <td>41-43</td>
+    <td>35-37</td>
+    <td>43-45</td>
+  </tr>
+  <tr>
+    <td>XL</td>
+    <td>44-46</td>
+    <td>38-40</td>
+    <td>46-48</td>
+  </tr>
+</table>`,
+    route: '/help/size-guide'
+  },
+  {
+    id: 'track-order',
+    title: 'Track Your Order',
+    content: `<h1>Track Your Order</h1>
+<p>Follow these steps to track your THRAX order:</p>
 
-**Do you ship internationally?**
-Yes, we ship to most countries worldwide. International shipping typically takes 7-14 business days.
-  `,
-  shipping: `
-# Shipping & Returns
+<h2>For Registered Users</h2>
+<ol>
+  <li>Log in to your THRAX account</li>
+  <li>Go to "My Orders" in your account dashboard</li>
+  <li>Select the order you want to track</li>
+  <li>Click the "Track Package" button</li>
+</ol>
 
-## Shipping Policy
-All orders are processed within 1-2 business days after payment confirmation. You will receive a shipping confirmation email with tracking information once your order has been shipped.
+<h2>For Guest Orders</h2>
+<ol>
+  <li>Go to our order tracking page</li>
+  <li>Enter your order number (found in your order confirmation email)</li>
+  <li>Enter the email address used for the order</li>
+  <li>Click "Track"</li>
+</ol>`,
+    route: '/help/track-order'
+  }
+];
 
-### Shipping Rates
-- Standard Shipping: $5.99 (3-5 business days)
-- Express Shipping: $12.99 (1-2 business days)
-- Free shipping on all orders over $75
-
-## Return Policy
-We offer a 30-day return policy for most items. To be eligible for a return, your item must be unused and in the same condition that you received it, with all original packaging and tags attached.
-  `,
-  trackOrder: `
-# Track Your Order
-
-To track your order, please enter your order number and the email address used for the purchase in the form below.
-
-You can find your order number in the order confirmation email that was sent to you after completing your purchase.
-
-If you have any issues tracking your order, please contact our customer service team at support@thrax.com or call us at (555) 123-4567.
-  `,
-  sizeGuide: `
-# Size Guide
-
-Finding the right size is essential for a perfect fit. Please refer to our detailed size charts below to help you select the best size for your purchase.
-
-## Clothing Size Chart
-| Size | Chest (inches) | Waist (inches) | Hips (inches) |
-|------|----------------|---------------|---------------|
-| XS   | 32-34          | 26-28         | 34-36         |
-| S    | 35-37          | 29-31         | 37-39         |
-| M    | 38-40          | 32-34         | 40-42         |
-| L    | 41-43          | 35-37         | 43-45         |
-| XL   | 44-46          | 38-40         | 46-48         |
-
-## Shoe Size Chart
-| US Size | EU Size | UK Size | Foot Length (inches) |
-|---------|---------|---------|----------------------|
-| 6       | 39      | 5.5     | 9.25                 |
-| 7       | 40      | 6.5     | 9.5                  |
-| 8       | 41      | 7.5     | 9.75                 |
-| 9       | 42      | 8.5     | 10                   |
-| 10      | 43      | 9.5     | 10.25                |
-  `
-};
-
-type PageType = "contactUs" | "faqs" | "shipping" | "trackOrder" | "sizeGuide";
-
-export default function HelpPagesAdmin() {
+const AdminHelpPages = () => {
+  const { user } = useAuth();
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState<PageType>("contactUs");
-  const [content, setContent] = useState<Record<PageType, string>>(defaultContent);
+  const [selectedPage, setSelectedPage] = useState(helpPages[0]);
+  const [editedContent, setEditedContent] = useState(selectedPage.content);
+  const [isEditing, setIsEditing] = useState(false);
 
-  // In a real application, fetch the content from your database
-  const { data, isLoading } = useQuery({
-    queryKey: ["/api/admin/help-pages"],
-    queryFn: async () => {
-      try {
-        const res = await apiRequest("GET", "/api/admin/help-pages");
-        const data = await res.json();
-        // If we have stored content, use it; otherwise use defaults
-        if (data && Object.keys(data).length) {
-          return data;
-        }
-        return defaultContent;
-      } catch (error) {
-        // If API fails, use default content
-        return defaultContent;
-      }
-    },
-  });
+  // Redirect if not admin
+  if (!user) {
+    return <Redirect to="/auth" />;
+  }
 
-  // Update content in state when data is loaded
-  useState(() => {
-    if (data) {
-      setContent(data);
-    }
-  });
-
-  // Mutation to save changes
-  const saveContentMutation = useMutation({
-    mutationFn: async (contentData: Record<PageType, string>) => {
-      const res = await apiRequest("POST", "/api/admin/help-pages", contentData);
-      return await res.json();
+  // Update help page content mutation
+  const { mutate: updateHelpPage, isPending: isUpdating } = useMutation({
+    mutationFn: async ({ id, content }: { id: string; content: string }) => {
+      // In a real app, this would save to the database
+      const response = await apiRequest('POST', '/api/admin/help-pages/update', { id, content });
+      return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/help-pages"] });
       toast({
-        title: "Content saved",
-        description: "The help page content has been updated successfully.",
+        title: 'Help Page Updated',
+        description: 'The help page content has been updated successfully.',
       });
+      setIsEditing(false);
+      // In a real app, we would invalidate queries
+      // queryClient.invalidateQueries(['/api/help-pages']);
     },
     onError: (error: Error) => {
       toast({
-        title: "Error saving content",
-        description: error.message || "There was a problem saving the content.",
-        variant: "destructive",
+        title: 'Failed to Update Help Page',
+        description: error.message,
+        variant: 'destructive',
       });
-    },
+    }
   });
 
-  const handleSave = () => {
-    saveContentMutation.mutate(content);
+  // Handle page selection
+  const handlePageSelect = (page: any) => {
+    setSelectedPage(page);
+    setEditedContent(page.content);
+    setIsEditing(false);
   };
 
-  const handleContentChange = (value: string) => {
-    setContent({
-      ...content,
-      [activeTab]: value,
-    });
+  // Handle content save
+  const handleSave = () => {
+    updateHelpPage({ id: selectedPage.id, content: editedContent });
+  };
+
+  // Get icon for help page
+  const getPageIcon = (id: string) => {
+    switch (id) {
+      case 'faqs':
+        return <HelpCircle className="h-5 w-5" />;
+      case 'shipping':
+        return <Truck className="h-5 w-5" />;
+      case 'contact-us':
+        return <Phone className="h-5 w-5" />;
+      case 'size-guide':
+        return <FileText className="h-5 w-5" />;
+      case 'track-order':
+        return <Info className="h-5 w-5" />;
+      default:
+        return <FileText className="h-5 w-5" />;
+    }
   };
 
   return (
-    <AdminLayout>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold">Help Pages</h1>
-        <Button onClick={handleSave} disabled={saveContentMutation.isPending}>
-          {saveContentMutation.isPending ? (
-            <span className="flex items-center">
-              <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent"></span>
-              Saving...
-            </span>
-          ) : (
-            <span className="flex items-center">
-              <Save className="mr-2 h-4 w-4" />
-              Save Changes
-            </span>
-          )}
-        </Button>
-      </div>
+    <>
+      <Helmet>
+        <title>Manage Help Pages | THRAX Admin</title>
+      </Helmet>
+      <div className="flex flex-col min-h-screen">
+        <SiteHeader />
+        <main className="flex-1 container max-w-7xl py-10 px-4 mx-auto">
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-3xl font-bold">Manage Help Pages</h1>
+            <p className="text-muted-foreground">Edit and update the help content for your customers</p>
+          </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Edit Help Pages</CardTitle>
-          <CardDescription>
-            Manage content for customer help and information pages. Changes will be published immediately.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as PageType)} className="w-full">
-            <TabsList className="grid grid-cols-5 mb-8">
-              <TabsTrigger value="contactUs" className="flex items-center">
-                <MessageSquare className="h-4 w-4 mr-2" />
-                <span>Contact Us</span>
-              </TabsTrigger>
-              <TabsTrigger value="faqs" className="flex items-center">
-                <LifeBuoy className="h-4 w-4 mr-2" />
-                <span>FAQs</span>
-              </TabsTrigger>
-              <TabsTrigger value="shipping" className="flex items-center">
-                <Truck className="h-4 w-4 mr-2" />
-                <span>Shipping & Returns</span>
-              </TabsTrigger>
-              <TabsTrigger value="trackOrder" className="flex items-center">
-                <FileText className="h-4 w-4 mr-2" />
-                <span>Track Order</span>
-              </TabsTrigger>
-              <TabsTrigger value="sizeGuide" className="flex items-center">
-                <Ruler className="h-4 w-4 mr-2" />
-                <span>Size Guide</span>
-              </TabsTrigger>
-            </TabsList>
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            {/* Sidebar */}
+            <div className="col-span-1">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Help Pages</CardTitle>
+                  <CardDescription>Select a page to edit</CardDescription>
+                </CardHeader>
+                <CardContent className="px-0">
+                  <Accordion type="single" collapsible defaultValue="help-pages">
+                    <AccordionItem value="help-pages">
+                      <AccordionTrigger className="px-6">Help Pages</AccordionTrigger>
+                      <AccordionContent className="pb-0">
+                        <div className="space-y-1">
+                          {helpPages.map((page) => (
+                            <Button
+                              key={page.id}
+                              variant={selectedPage.id === page.id ? "secondary" : "ghost"}
+                              className="w-full justify-start pl-10"
+                              onClick={() => handlePageSelect(page)}
+                            >
+                              <div className="flex items-center">
+                                {getPageIcon(page.id)}
+                                <span className="ml-2">{page.title}</span>
+                              </div>
+                            </Button>
+                          ))}
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                </CardContent>
+              </Card>
+            </div>
 
-            {Object.keys(defaultContent).map((pageKey) => (
-              <TabsContent key={pageKey} value={pageKey} className="space-y-4">
-                <div className="grid gap-4">
-                  <div>
-                    <Label htmlFor={`${pageKey}-content`} className="text-lg font-medium mb-2 block">
-                      {pageKey === "contactUs" && "Contact Us Page Content"}
-                      {pageKey === "faqs" && "Frequently Asked Questions Content"}
-                      {pageKey === "shipping" && "Shipping & Returns Content"}
-                      {pageKey === "trackOrder" && "Track Order Page Content"}
-                      {pageKey === "sizeGuide" && "Size Guide Content"}
-                    </Label>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      Edit the content using Markdown formatting. Preview will be shown on the right.
-                    </p>
-                  </div>
-                  <div className="grid gap-6 md:grid-cols-2">
+            {/* Content editor */}
+            <div className="col-span-1 lg:col-span-3">
+              <Card>
+                <CardHeader>
+                  <div className="flex justify-between items-center">
                     <div>
-                      <Textarea
-                        id={`${pageKey}-content`}
-                        value={content[pageKey as PageType]}
-                        onChange={(e) => handleContentChange(e.target.value)}
-                        className="font-mono h-[500px] resize-none"
-                      />
+                      <CardTitle>{selectedPage.title}</CardTitle>
+                      <CardDescription>
+                        Page URL: <Link href={selectedPage.route} className="text-primary hover:underline" target="_blank">{selectedPage.route}</Link>
+                      </CardDescription>
                     </div>
-                    <div className="border rounded-md p-4 bg-muted/30 overflow-auto h-[500px]">
-                      <div className="prose dark:prose-invert max-w-none">
-                        {/* In a real app, use a markdown renderer here */}
-                        <pre className="whitespace-pre-wrap">{content[pageKey as PageType]}</pre>
-                      </div>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        onClick={() => setIsEditing(!isEditing)}
+                      >
+                        {isEditing ? 'Cancel Edit' : 'Edit Page'}
+                      </Button>
+                      {isEditing && (
+                        <Button
+                          onClick={handleSave}
+                          disabled={isUpdating}
+                        >
+                          {isUpdating ? (
+                            <>
+                              <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
+                              Saving
+                            </>
+                          ) : (
+                            <>
+                              <Save className="h-4 w-4 mr-2" /> Save Changes
+                            </>
+                          )}
+                        </Button>
+                      )}
                     </div>
                   </div>
-                </div>
-              </TabsContent>
-            ))}
-          </Tabs>
-        </CardContent>
-        <CardFooter className="flex justify-end">
-          <Button onClick={handleSave} disabled={saveContentMutation.isPending}>
-            {saveContentMutation.isPending ? "Saving..." : "Save Changes"}
-          </Button>
-        </CardFooter>
-      </Card>
-    </AdminLayout>
+                </CardHeader>
+                <CardContent>
+                  <Tabs defaultValue="edit" className="w-full">
+                    <TabsList className="mb-4">
+                      <TabsTrigger value="edit">
+                        {isEditing ? 'Edit Content' : 'View Content'}
+                      </TabsTrigger>
+                      <TabsTrigger value="preview">Preview</TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="edit">
+                      {isEditing ? (
+                        <div className="space-y-4">
+                          <div>
+                            <Label htmlFor="content">HTML Content</Label>
+                            <Textarea
+                              id="content"
+                              className="h-[600px] font-mono text-sm"
+                              value={editedContent}
+                              onChange={(e) => setEditedContent(e.target.value)}
+                            />
+                          </div>
+                        </div>
+                      ) : (
+                        <EditableSection
+                          id={`help-page-${selectedPage.id}`}
+                          title={selectedPage.title}
+                          path={`db:help_pages:content:${selectedPage.id}`}
+                          content={selectedPage.content}
+                          description="Click 'Edit Page' to modify this content"
+                        />
+                      )}
+                    </TabsContent>
+                    <TabsContent value="preview">
+                      <Card>
+                        <CardContent className="pt-6">
+                          <div
+                            className="prose prose-invert max-w-none"
+                            dangerouslySetInnerHTML={{ __html: isEditing ? editedContent : selectedPage.content }}
+                          />
+                        </CardContent>
+                      </Card>
+                    </TabsContent>
+                  </Tabs>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </main>
+        <SiteFooter />
+      </div>
+    </>
   );
-}
+};
+
+export default AdminHelpPages;

@@ -1,165 +1,122 @@
-import { createContext, useContext, useState, ReactNode } from "react";
-import { useAuth } from "@/hooks/use-auth";
-import { useMutation } from "@tanstack/react-query";
-import { apiRequest, queryClient } from "@/lib/queryClient";
-import { useToast } from "@/hooks/use-toast";
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { apiRequest } from '@/lib/queryClient';
+import { useToast } from '@/hooks/use-toast';
 
-// Types of content that can be edited
-export type ContentType = "text" | "html" | "image" | "component";
+type EditableContentMap = Record<string, string>;
 
-// Type for an editable content field
-export interface EditableContent {
-  id: string;
-  path: string; // File path or API endpoint for updating this content
-  type: ContentType;
-  content: string;
-  location?: string; // Optional metadata about location in the app
-}
-
-// Admin edit mode context
-interface AdminEditContextProps {
+interface AdminEditContextType {
   isEditMode: boolean;
   toggleEditMode: () => void;
-  editableContent: EditableContent[];
-  registerEditableContent: (content: EditableContent) => void;
-  unregisterEditableContent: (id: string) => void;
-  updateContent: (id: string, newContent: string) => void;
+  editableContent: EditableContentMap;
+  setEditableContent: (path: string, content: string) => void;
   saveChanges: () => Promise<void>;
   discardChanges: () => void;
   isSaving: boolean;
 }
 
-const AdminEditContext = createContext<AdminEditContextProps | undefined>(undefined);
+const AdminEditContext = createContext<AdminEditContextType | undefined>(undefined);
 
-export function AdminEditProvider({ children }: { children: ReactNode }) {
-  const { user } = useAuth();
-  const { toast } = useToast();
+export const AdminEditProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isEditMode, setIsEditMode] = useState(false);
-  const [editableContent, setEditableContent] = useState<EditableContent[]>([]);
-  const [originalContent, setOriginalContent] = useState<Record<string, string>>({});
-  
-  // Save changes mutation
-  const { mutate, isPending: isSaving } = useMutation({
-    mutationFn: async (updates: { id: string; content: string; path: string }[]) => {
-      return await Promise.all(
-        updates.map(update => 
-          apiRequest("POST", "/api/admin/update-content", update)
-        )
-      );
-    },
-    onSuccess: () => {
-      toast({
-        title: "Changes saved",
-        description: "Your content updates have been saved successfully.",
-      });
-      // Update original content after save
-      const newOriginals: Record<string, string> = {};
-      editableContent.forEach(item => {
-        newOriginals[item.id] = item.content;
-      });
-      setOriginalContent(newOriginals);
-      queryClient.invalidateQueries();
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Failed to save changes",
-        description: error.message,
-        variant: "destructive",
-      });
-    }
-  });
+  const [editableContent, setEditableContentState] = useState<EditableContentMap>({});
+  const [originalContent, setOriginalContent] = useState<EditableContentMap>({});
+  const [isSaving, setIsSaving] = useState(false);
+  const { toast } = useToast();
 
   // Toggle edit mode
   const toggleEditMode = () => {
-    if (!isEditMode) {
-      // Entering edit mode - store original content
-      const originals: Record<string, string> = {};
-      editableContent.forEach(item => {
-        originals[item.id] = item.content;
-      });
-      setOriginalContent(originals);
-      setIsEditMode(true);
+    // If turning off edit mode without saving, revert to original content
+    if (isEditMode) {
+      setEditableContentState(originalContent);
     } else {
-      // Exiting edit mode - ask if they want to save changes
-      setIsEditMode(false);
+      // When turning on edit mode, save the current state to revert to later if needed
+      setOriginalContent({ ...editableContent });
     }
+    setIsEditMode(!isEditMode);
   };
 
-  // Register editable content
-  const registerEditableContent = (content: EditableContent) => {
-    setEditableContent(prev => {
-      // If this ID already exists, replace it
-      const exists = prev.some(item => item.id === content.id);
-      if (exists) {
-        return prev.map(item => 
-          item.id === content.id ? content : item
-        );
-      }
-      // Otherwise add it
-      return [...prev, content];
-    });
+  // Set editable content for a specific path
+  const setEditableContent = (path: string, content: string) => {
+    setEditableContentState((prev) => ({ ...prev, [path]: content }));
   };
 
-  // Unregister editable content
-  const unregisterEditableContent = (id: string) => {
-    setEditableContent(prev => prev.filter(item => item.id !== id));
-  };
-
-  // Update content
-  const updateContent = (id: string, newContent: string) => {
-    setEditableContent(prev => 
-      prev.map(item => 
-        item.id === id ? { ...item, content: newContent } : item
-      )
-    );
-  };
-
-  // Save all changes
+  // Save changes to the server
   const saveChanges = async () => {
-    // Only save items that have changed
-    const changedItems = editableContent.filter(
-      item => originalContent[item.id] !== item.content
-    );
-    
-    if (changedItems.length === 0) {
-      toast({
-        title: "No changes to save",
-        description: "No content has been modified.",
+    try {
+      setIsSaving(true);
+      
+      // For each path in the editableContent, send a request to the server
+      const updatePromises = Object.entries(editableContent).map(async ([path, content]) => {
+        // Skip if the content hasn't changed
+        if (content === originalContent[path]) {
+          return;
+        }
+
+        // Parse the path to determine how to save the content
+        // Format: <type>:<collection>:<field>:<id>
+        const pathParts = path.split(':');
+        const type = pathParts[0];
+        
+        // Different endpoints based on the type of content
+        if (type === 'db') {
+          // Database stored content
+          const collection = pathParts[1];
+          const field = pathParts[2];
+          const id = pathParts[3];
+          
+          await apiRequest('POST', '/api/admin/content/update', {
+            type,
+            collection,
+            field,
+            id,
+            content
+          });
+        } else if (type === 'file') {
+          // File stored content
+          const filePath = pathParts.slice(1).join(':');
+          
+          await apiRequest('POST', '/api/admin/content/update', {
+            type,
+            path: filePath,
+            content
+          });
+        }
       });
-      return;
+
+      await Promise.all(updatePromises);
+      
+      // Update the original content to match the current state
+      setOriginalContent({ ...editableContent });
+      
+      // Turn off edit mode
+      setIsEditMode(false);
+      
+      toast({
+        title: 'Changes Saved',
+        description: 'Your content updates have been saved successfully.',
+      });
+    } catch (error) {
+      console.error('Error saving content:', error);
+      toast({
+        title: 'Error Saving Changes',
+        description: 'There was a problem saving your content updates. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsSaving(false);
     }
-    
-    // Prepare updates for the mutation
-    const updates = changedItems.map(item => ({
-      id: item.id,
-      content: item.content,
-      path: item.path,
-    }));
-    
-    mutate(updates);
   };
 
-  // Discard all changes
+  // Discard changes and revert to original content
   const discardChanges = () => {
-    setEditableContent(prev => 
-      prev.map(item => ({
-        ...item,
-        content: originalContent[item.id] || item.content
-      }))
-    );
+    setEditableContentState(originalContent);
+    setIsEditMode(false);
     
     toast({
-      title: "Changes discarded",
-      description: "All content changes have been reverted.",
+      title: 'Changes Discarded',
+      description: 'Your content updates have been discarded.',
     });
-    
-    setIsEditMode(false);
   };
-
-  // Only provide edit functionality to admins
-  if (!user?.isAdmin) {
-    return <>{children}</>;
-  }
 
   return (
     <AdminEditContext.Provider
@@ -167,35 +124,21 @@ export function AdminEditProvider({ children }: { children: ReactNode }) {
         isEditMode,
         toggleEditMode,
         editableContent,
-        registerEditableContent,
-        unregisterEditableContent,
-        updateContent,
+        setEditableContent,
         saveChanges,
         discardChanges,
-        isSaving,
+        isSaving
       }}
     >
       {children}
     </AdminEditContext.Provider>
   );
-}
+};
 
-export function useAdminEdit() {
+export const useAdminEdit = (): AdminEditContextType => {
   const context = useContext(AdminEditContext);
-  // Return a default non-editing context if used outside provider
-  // This prevents errors when components use this hook outside the provider
   if (context === undefined) {
-    return {
-      isEditMode: false,
-      toggleEditMode: () => {},
-      editableContent: [],
-      registerEditableContent: () => {},
-      unregisterEditableContent: () => {},
-      updateContent: () => {},
-      saveChanges: async () => {},
-      discardChanges: () => {},
-      isSaving: false
-    };
+    throw new Error('useAdminEdit must be used within an AdminEditProvider');
   }
   return context;
-}
+};
