@@ -422,10 +422,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid product ID" });
       }
 
-      // In a real implementation, we'd update the product here
-      // For this prototype, we'll just return success
-      res.status(200).json({ message: "Product updated successfully" });
+      // Validate product data
+      const productData = req.body;
+      
+      // Verify product exists
+      const existingProduct = await storage.getProductById(id);
+      if (!existingProduct) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+      
+      // Update the product
+      const updatedProduct = await storage.updateProduct(id, productData);
+      
+      res.status(200).json(updatedProduct);
     } catch (error) {
+      console.error("Failed to update product:", error);
       res.status(500).json({ message: "Failed to update product" });
     }
   });
@@ -437,10 +448,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid product ID" });
       }
 
-      // In a real implementation, we'd delete the product here
-      // For this prototype, we'll just return success
-      res.status(200).json({ message: "Product deleted successfully" });
+      // Verify product exists
+      const existingProduct = await storage.getProductById(id);
+      if (!existingProduct) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+      
+      // Delete the product
+      await storage.deleteProduct(id);
+      
+      res.status(200).json({ message: "Product deleted successfully", id });
     } catch (error) {
+      console.error("Failed to delete product:", error);
       res.status(500).json({ message: "Failed to delete product" });
     }
   });
