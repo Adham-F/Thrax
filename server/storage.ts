@@ -53,6 +53,8 @@ export interface IStorage {
   getProductsByCategory(category: string): Promise<Product[]>;
   getProductById(id: number): Promise<Product | undefined>;
   createProduct(product: InsertProduct): Promise<Product>;
+  updateProduct(id: number, product: Partial<InsertProduct>): Promise<Product>;
+  deleteProduct(id: number): Promise<void>;
   searchProducts(query: string): Promise<Product[]>;
   getNewArrivals(): Promise<Product[]>;
   getPopularProducts(): Promise<Product[]>;
@@ -234,6 +236,31 @@ export class MemStorage implements IStorage {
     return Array.from(this.products.values())
       .filter((product) => product.isSale)
       .slice(0, 8);
+  }
+  
+  async updateProduct(id: number, productData: Partial<InsertProduct>): Promise<Product> {
+    const product = this.products.get(id);
+    
+    if (!product) {
+      throw new Error(`Product with ID ${id} not found`);
+    }
+    
+    const updatedProduct = {
+      ...product,
+      ...productData,
+      updatedAt: new Date()
+    };
+    
+    this.products.set(id, updatedProduct);
+    return updatedProduct;
+  }
+  
+  async deleteProduct(id: number): Promise<void> {
+    if (!this.products.has(id)) {
+      throw new Error(`Product with ID ${id} not found`);
+    }
+    
+    this.products.delete(id);
   }
 
   // Cart methods
@@ -948,6 +975,20 @@ export class DatabaseStorage implements IStorage {
   async createProduct(insertProduct: InsertProduct): Promise<Product> {
     const [product] = await db.insert(products).values(insertProduct).returning();
     return product;
+  }
+  
+  async updateProduct(id: number, productData: Partial<InsertProduct>): Promise<Product> {
+    const [updatedProduct] = await db
+      .update(products)
+      .set(productData)
+      .where(eq(products.id, id))
+      .returning();
+    
+    return updatedProduct;
+  }
+  
+  async deleteProduct(id: number): Promise<void> {
+    await db.delete(products).where(eq(products.id, id));
   }
 
   async searchProducts(query: string): Promise<Product[]> {
