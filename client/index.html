@@ -18,6 +18,37 @@
   </head>
   <body>
     <div id="root"></div>
+    
+    <!-- THRAX Admin Toolbar - Direct HTML Implementation -->
+    <div id="admin-toolbar" style="position: fixed; bottom: 0; left: 0; right: 0; background-color: #FF0000; z-index: 99999; padding: 15px; box-shadow: 0 -4px 10px rgba(0,0,0,0.5); border-top: 5px solid #FFCC00;">
+      <div style="text-align: center; margin-bottom: 10px; color: white; font-size: 24px; font-weight: bold;">
+        THRAX ADMIN CONTROL CENTER
+      </div>
+      <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+        <a href="/admin/dashboard" style="background-color: #0066FF; color: white; padding: 12px 20px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 16px;">
+          Admin Dashboard
+        </a>
+        <a href="/admin/products" style="background-color: #00CC44; color: white; padding: 12px 20px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 16px;">
+          Manage Products
+        </a>
+        <a href="/admin/help-pages" style="background-color: #9900CC; color: white; padding: 12px 20px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 16px;">
+          Edit Help Pages
+        </a>
+        <a href="/admin/newsletters" style="background-color: #FF6600; color: white; padding: 12px 20px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 16px;">
+          Manage Newsletters
+        </a>
+      </div>
+    </div>
+    
+    <script>
+      // Ensure admin toolbar is visible for admin users
+      document.addEventListener('DOMContentLoaded', function() {
+        // Always show admin toolbar in development mode
+        const adminToolbar = document.getElementById('admin-toolbar');
+        adminToolbar.style.display = 'block';
+      });
+    </script>
+    
     <script type="module" src="/src/main.tsx"></script>
     <!-- This is a replit script which adds a banner on the top of the page when opened in development mode outside the replit environment -->
     <script type="text/javascript" src="https://replit.com/public/js/replit-dev-banner.js"></script>
