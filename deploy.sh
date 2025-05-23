@@ -84,11 +84,13 @@ if git clone --depth 1 --branch $BRANCH $REPO_URL .; then
     
     # Copy all files to the main directory (excluding specific files)
     echo -e "${YELLOW}Copying files to the deployment directory...${RESET}"
-    rsync -a \
-        --exclude='.git' \
-        --exclude='deploy.sh' \
-        --exclude='backup_before_sync_*' \
-        ./ $CURRENT_DIR/
+    # Remove .git directory first to avoid conflicts
+    rm -rf .git
+    # Copy all files
+    cp -r . $CURRENT_DIR/
+    # Don't overwrite the deploy.sh script itself or backup directories
+    rm -f $CURRENT_DIR/deploy.sh
+    rm -rf $CURRENT_DIR/backup_before_sync_*
     
     # Return to the original directory
     cd $CURRENT_DIR
