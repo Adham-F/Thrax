@@ -29,13 +29,11 @@ BRANCH="main"
 
 # Check for required tools
 echo -e "${YELLOW}Checking for required tools...${RESET}"
-for cmd in git rsync; do
-  if ! command -v $cmd &> /dev/null; then
-    echo -e "${RED}❌ $cmd is not installed. This script requires git and rsync.${RESET}"
-    exit 1
-  fi
-done
-echo -e "${GREEN}✓ All required tools are available${RESET}"
+if ! command -v git &> /dev/null; then
+  echo -e "${RED}❌ git is not installed. This script requires git.${RESET}"
+  exit 1
+fi
+echo -e "${GREEN}✓ Git is available${RESET}"
 echo ""
 
 # Store current directory and create backup
@@ -44,7 +42,8 @@ BACKUP_DIR="${CURRENT_DIR}/backup_before_sync_$(date +%Y%m%d_%H%M%S)"
 
 echo -e "${YELLOW}Creating backup of current project...${RESET}"
 mkdir -p $BACKUP_DIR
-rsync -a --exclude="node_modules" --exclude=".git" $CURRENT_DIR/ $BACKUP_DIR/
+cp -r --preserve=timestamps $CURRENT_DIR/* $BACKUP_DIR/ 2>/dev/null || true
+cp -r --preserve=timestamps $CURRENT_DIR/.* $BACKUP_DIR/ 2>/dev/null || true
 echo -e "${GREEN}✓ Backup created at: $BACKUP_DIR${RESET}"
 echo ""
 
