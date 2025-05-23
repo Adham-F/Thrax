@@ -1,41 +1,94 @@
 #!/bin/bash
 
-# Script to pull the latest GitHub version before deployment
+# ================================================================
+# THRAX E-COMMERCE GITHUB SYNC TOOL - ENHANCED VERSION
+# ================================================================
+# This script synchronizes your Replit project with the GitHub version
+# before deployment, ensuring all the latest features are included.
+# ================================================================
 
-echo "======================================================="
-echo "THRAX E-COMMERCE GITHUB SYNC TOOL"
-echo "======================================================="
-echo "This script will sync your Replit project with the latest"
-echo "version from your GitHub repository before deployment."
-echo ""
+# Text formatting
+BOLD='\033[1m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+RED='\033[0;31m'
+BLUE='\033[0;34m'
+RESET='\033[0m'
 
-# GitHub repository details - update these with your actual details
+# Show header
+echo -e "${BOLD}${BLUE}=================================================================${RESET}"
+echo -e "${BOLD}${BLUE}            THRAX E-COMMERCE GITHUB SYNC TOOL                  ${RESET}"
+echo -e "${BOLD}${BLUE}=================================================================${RESET}"
+echo -e "This tool will ensure your deployment uses the ${BOLD}latest GitHub version${RESET}"
+echo -e "of your THRAX e-commerce platform, including all admin features."
+echo -e ""
+
+# GitHub repository details
 REPO_URL="https://github.com/Adham-F/Thrax.git"
 BRANCH="main"
 
-echo "🔄 Syncing with GitHub repository: $REPO_URL ($BRANCH branch)"
+# Check for required tools
+echo -e "${YELLOW}Checking for required tools...${RESET}"
+for cmd in git rsync; do
+  if ! command -v $cmd &> /dev/null; then
+    echo -e "${RED}❌ $cmd is not installed. This script requires git and rsync.${RESET}"
+    exit 1
+  fi
+done
+echo -e "${GREEN}✓ All required tools are available${RESET}"
 echo ""
 
-# Store the current directory
+# Store current directory and create backup
 CURRENT_DIR=$(pwd)
+BACKUP_DIR="${CURRENT_DIR}/backup_before_sync_$(date +%Y%m%d_%H%M%S)"
+
+echo -e "${YELLOW}Creating backup of current project...${RESET}"
+mkdir -p $BACKUP_DIR
+rsync -a --exclude="node_modules" --exclude=".git" $CURRENT_DIR/ $BACKUP_DIR/
+echo -e "${GREEN}✓ Backup created at: $BACKUP_DIR${RESET}"
+echo ""
 
 # Create a temporary directory for the clone
 TEMP_DIR=$(mktemp -d)
 cd $TEMP_DIR
 
 # Clone the repository
-echo "📥 Cloning the latest version from GitHub..."
+echo -e "${YELLOW}Cloning the latest version from GitHub (${BOLD}$REPO_URL${RESET}${YELLOW})...${RESET}"
 if git clone --depth 1 --branch $BRANCH $REPO_URL .; then
-    echo "✅ Clone successful!"
+    echo -e "${GREEN}✓ Clone successful!${RESET}"
     
-    # Copy all files to the main directory (excluding git files and certain config files)
-    echo "📋 Copying files to the deployment directory..."
-    rsync -av \
+    # Preserve critical Replit config files
+    echo -e "${YELLOW}Backing up critical Replit configuration files...${RESET}"
+    for file in .replit replit.nix package-lock.json; do
+        if [ -f "$CURRENT_DIR/$file" ]; then
+            cp "$CURRENT_DIR/$file" ./
+            echo -e "${GREEN}  ✓ Preserved $file${RESET}"
+        fi
+    done
+    
+    # Check if admin toolbar code is present in the GitHub version
+    if grep -q "admin-toolbar" $(find . -type f -name "*.tsx" -o -name "*.ts" -o -name "*.html" | xargs); then
+        echo -e "${GREEN}✓ Admin toolbar found in GitHub version${RESET}"
+    else
+        echo -e "${YELLOW}⚠️ Admin toolbar not found in GitHub version. Adding it...${RESET}"
+        # Ensure our admin tools are integrated
+        if [ -f "$CURRENT_DIR/client/index.html" ]; then
+            cp "$CURRENT_DIR/client/index.html" ./client/
+            echo -e "${GREEN}  ✓ Integrated admin toolbar HTML${RESET}"
+        fi
+        if [ -f "$CURRENT_DIR/client/src/components/emergency-admin-toolbar.tsx" ]; then
+            mkdir -p ./client/src/components/
+            cp "$CURRENT_DIR/client/src/components/emergency-admin-toolbar.tsx" ./client/src/components/
+            echo -e "${GREEN}  ✓ Integrated emergency admin toolbar component${RESET}"
+        fi
+    fi
+    
+    # Copy all files to the main directory (excluding specific files)
+    echo -e "${YELLOW}Copying files to the deployment directory...${RESET}"
+    rsync -a \
         --exclude='.git' \
         --exclude='deploy.sh' \
-        --exclude='.replit' \
-        --exclude='package-lock.json' \
-        --exclude='replit.nix' \
+        --exclude='backup_before_sync_*' \
         ./ $CURRENT_DIR/
     
     # Return to the original directory
@@ -45,13 +98,29 @@ if git clone --depth 1 --branch $BRANCH $REPO_URL .; then
     rm -rf $TEMP_DIR
     
     echo ""
-    echo "🌟 GitHub sync complete! Your Replit project now contains"
-    echo "   the latest code from your GitHub repository."
+    echo -e "${GREEN}${BOLD}🎉 GitHub sync complete!${RESET}"
+    echo -e "${GREEN}Your Replit project now contains the latest code from your GitHub repository,${RESET}"
+    echo -e "${GREEN}including all admin features and necessary configurations.${RESET}"
     echo ""
-    echo "Now you can deploy your application using Replit's deploy button."
-    echo "======================================================="
+    echo -e "${BLUE}Next steps:${RESET}"
+    echo -e "1. ${BOLD}Start the application${RESET} to test if everything works as expected"
+    echo -e "2. ${BOLD}Click the deploy button${RESET} in Replit to deploy your updated application"
+    echo -e ""
+    echo -e "${BLUE}If you encounter any issues, you can restore from the backup at:${RESET}"
+    echo -e "${BOLD}$BACKUP_DIR${RESET}"
+    echo -e "${BLUE}=================================================================${RESET}"
 else
-    echo "❌ Failed to clone repository. Please check the URL and your internet connection."
+    echo -e "${RED}❌ Failed to clone repository.${RESET}"
+    echo -e "${YELLOW}Possible reasons:${RESET}"
+    echo -e "  - The repository URL is incorrect"
+    echo -e "  - The branch name is incorrect"
+    echo -e "  - Network connectivity issues"
+    echo -e "  - GitHub authentication issues"
+    echo ""
+    echo -e "${YELLOW}Try:${RESET}"
+    echo -e "  - Checking the repository URL and branch name"
+    echo -e "  - Ensuring you have network connectivity"
+    
     cd $CURRENT_DIR
     rm -rf $TEMP_DIR
     exit 1

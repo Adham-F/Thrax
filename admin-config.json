@@ -1,0 +1,49 @@
+{
+  "version": "1.0.0",
+  "admin_features": {
+    "toolbar": {
+      "enabled": true,
+      "position": "bottom",
+      "background_color": "#FF0000",
+      "border_color": "#FFCC00",
+      "text_color": "#FFFFFF"
+    },
+    "pages": {
+      "dashboard": {
+        "enabled": true,
+        "path": "/admin/dashboard",
+        "icon": "LayoutDashboard"
+      },
+      "products": {
+        "enabled": true,
+        "path": "/admin/products",
+        "icon": "ShoppingBag"
+      },
+      "help_pages": {
+        "enabled": true,
+        "path": "/admin/help-pages",
+        "icon": "FileText"
+      },
+      "newsletters": {
+        "enabled": true,
+        "path": "/admin/newsletters",
+        "icon": "Mail"
+      }
+    },
+    "permissions": {
+      "admin_users": [
+        {"username": "admin", "email": "admin@thrax.com"},
+        {"username": "owner", "email": "fultonadham@gmail.com"}
+      ],
+      "admin_actions": [
+        "edit_products",
+        "delete_products", 
+        "add_products",
+        "edit_content",
+        "manage_users",
+        "view_analytics"
+      ]
+    },
+    "deployment_notes": "This configuration ensures admin features are included in all deployments. When deploying, run './deploy.sh' first to sync with GitHub."
+  }
+}
