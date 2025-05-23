@@ -7,7 +7,7 @@ channel = "stable-24_05"
 
 [deployment]
 deploymentTarget = "autoscale"
-build = ["sh", "-c", "apt-get update && apt-get install -y rsync && chmod +x ./deploy.sh && ./deploy.sh && npm run build"]
+build = ["sh", "-c", "./deploy.sh && npm run build"]
 run = ["sh", "-c", "npm start"]
 
 [[ports]]
